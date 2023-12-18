@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import videojs from 'video.js';
 import Player from "video.js/dist/types/player";
+import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
+import { tap } from 'rxjs';
+
 
 
 @Component({
@@ -8,7 +10,7 @@ import Player from "video.js/dist/types/player";
   templateUrl: './video-page.component.html',
   styleUrls: ['./video-page.component.scss']
 })
-export class VideoPageComponent{
+export class VideoPageComponent implements OnInit{
   videoJsOptions = {
     autoplay: false,
     controls: true,
@@ -18,21 +20,54 @@ export class VideoPageComponent{
     }]
   };
   player : Player | undefined;
+  webSocket! : WebSocketSubject<any>;
 
+  ngOnInit(): void {
+    this.webSocket = webSocket('ws://localhost:8081');
+    this.webSocket.pipe(
+      tap({
+        next: (msg : any) => this.handleWsMessage(msg),
+        error: (err) => console.log(err),
+        complete: () => console.log('complete')
+      })
+    ).subscribe();
+  }
   setPlayer(player: Player) {
     this.player = player;
-    console.log('Player: ', player);
+    this.player.on('play', () => {
+      console.log('play');
+      this.webSocket.next(JSON.stringify({event: 'play'}));
+    });
+    this.player.on('pause', () => {
+      console.log('pause');
+      this.webSocket.next(JSON.stringify({event: 'pause'}));
+    });
   }
+  
 
-  playPause() {
-    if (this.player) {
-      if (this.player.paused()) {
+  handleWsMessage(msg: any) {
+    console.dir(msg);
+    if(!this.player) return;
+    switch(msg.event) {
+      case 'welcome':
+        console.log('Connected to server');
+        this.player.currentTime(msg.time);
+        msg.paused? this.player.pause() : this.player.play();
+        break;
+      case 'play':
         this.player.play();
-      } else {
+        break;
+      case 'pause':
         this.player.pause();
-      }
+        break;
+      case 'setTime':
+        this.player?.currentTime(msg.time);
+        break;
     }
   }
   
 
+}
+interface WsMessage {
+  event: string;
 }
