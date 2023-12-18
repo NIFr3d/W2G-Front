@@ -1,1 +1,2 @@
-<app-vjs-player [options]="{autoplay: false, controls: true, sources: [{ src: 'videos/Bakemonogatari_Episode_1_VF_BD.mp4', type: 'video/mp4' }]}"></app-vjs-player>
+<app-vjs-player [options]="videoJsOptions" (sendPlayer)="setPlayer($event)"></app-vjs-player>
+<button (click)="playPause()">Play</button>

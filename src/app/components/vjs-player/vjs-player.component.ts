@@ -1,5 +1,6 @@
-import {Component, ElementRef, Input, OnDestroy, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, ViewEncapsulation} from '@angular/core';
 import videojs from 'video.js';
+import Player from "video.js/dist/types/player";
 
 @Component({
   selector: 'app-vjs-player',
@@ -29,7 +30,9 @@ export class VjsPlayerComponent implements OnInit, OnDestroy {
     }[];
   };
 
-  player: any;
+  @Output() sendPlayer = new EventEmitter<Player>();
+
+  player!: Player;
 
   constructor(
     private elementRef: ElementRef,
@@ -40,6 +43,7 @@ export class VjsPlayerComponent implements OnInit, OnDestroy {
     this.player = videojs(this.target.nativeElement, this.options, function onPlayerReady(this: any) {
       console.log('onPlayerReady', this);
     });
+    this.sendPlayer.emit(this.player);
   }
 
   // Dispose the player OnDestroy
