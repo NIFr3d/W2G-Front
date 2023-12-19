@@ -1,1 +1,7 @@
+<div *ngIf="connectionError">
+    <p class="text-danger"><i class="bi bi-cloud-minus px-2"></i>Erreur : Connexion au serveur de synchronisation impossible</p>
+</div>
+<div *ngIf="!connectionError"> 
+    <p class="text-success"><i class="bi bi-cloud-check px-2"></i>Connexion au serveur de synchronisation établie</p>
+</div>
 <app-vjs-player [options]="videoJsOptions" (sendPlayer)="setPlayer($event)"></app-vjs-player>
