@@ -4,4 +4,10 @@
 <div *ngIf="!connectionError"> 
     <p class="text-success"><i class="bi bi-cloud-check px-2"></i>Connexion au serveur de synchronisation établie</p>
 </div>
+<div>
+    <select [(ngModel)]="videoUrl">
+        <option *ngFor="let video of videos" [value]="video">{{video}}</option>
+    </select>
+    <button class="btn btn-primary" (click)="changeVideo()">Charger</button>
+</div>
 <app-vjs-player [options]="videoJsOptions" (sendPlayer)="setPlayer($event)"></app-vjs-player>

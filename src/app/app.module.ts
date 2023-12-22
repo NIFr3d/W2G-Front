@@ -6,6 +6,9 @@ import { AppComponent } from './app.component';
 
 import { VjsPlayerComponent } from './components/vjs-player/vjs-player.component';
 import { VideoPageComponent } from './components/video-page/video-page.component';
+import { VideoService } from './video.service';
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -15,9 +18,11 @@ import { VideoPageComponent } from './components/video-page/video-page.component
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule,
+    FormsModule
   ],
-  providers: [],
+  providers: [VideoService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
