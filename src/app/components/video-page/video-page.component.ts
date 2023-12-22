@@ -3,9 +3,12 @@ import Player from "video.js/dist/types/player";
 import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
 import { tap } from 'rxjs';
 import { VideoService } from 'src/app/video.service';
-import videojs from 'video.js';
-
-
+declare var SubtitlesOctopus: any;
+declare global {
+  interface Window {
+    octopusInstance: typeof SubtitlesOctopus;
+  }
+}
 
 @Component({
   selector: 'app-video-page',
@@ -15,12 +18,13 @@ import videojs from 'video.js';
 export class VideoPageComponent implements OnInit{
 
   constructor(private videoService: VideoService) { }
+  
   serverIp : string = window.location.hostname;
   videoJsOptions = {
     autoplay: false,
     controls: true,
     sources: [{
-      src: 'videos/Bakemonogatari_Episode_1_VF_BD.mp4',
+      src: '',
       type: 'video/mp4'
     }],
     textTrackSettings: true
@@ -82,14 +86,19 @@ export class VideoPageComponent implements OnInit{
       case 'mp4':
         videoType = 'video/mp4';
         break;
+
+
+      // Rest of the code...
+
       case 'mkv':
         videoType = 'video/webm';
-        break;
-      case 'avi':
-        videoType = 'video/x-msvideo';
-        break;
-      case 'webm':
-        videoType = 'video/webm';
+        var options = {
+          video: document.getElementById('videojs-player'),
+          subUrl: `http://${this.serverIp}:8080/subtitles/${this.videoUrl}`,
+          fonts: ["fonts/Roboto-Regular.ttf", "fonts/Roboto-Bold.ttf"],
+          workerUrl: "/assets/js/subtitles-octopus-worker.js"
+        };
+        window.octopusInstance = new SubtitlesOctopus(options);
         break;
       default:
         videoType = 'video/mp4';
