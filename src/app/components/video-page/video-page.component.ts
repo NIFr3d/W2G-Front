@@ -23,10 +23,7 @@ export class VideoPageComponent implements OnInit{
   videoJsOptions = {
     autoplay: false,
     controls: true,
-    sources: [{
-      src: '',
-      type: 'video/mp4'
-    }],
+    sources: [],
     textTrackSettings: true
   };
   player : Player | undefined;
@@ -77,6 +74,15 @@ export class VideoPageComponent implements OnInit{
       this.webSocket.next(JSON.stringify({event: 'pause', currentTime: this.player.currentTime()}));
     });
   }
+
+  chargeSubtitles() {
+    var options = {
+      video: document.getElementById('videojs-player_html5_api'),
+      subUrl: `http://${this.serverIp}:8080/subtitles/${this.videoUrl}`,
+      workerUrl: "/assets/js/subtitles-octopus-worker.js"
+    };
+    window.octopusInstance = new SubtitlesOctopus(options);
+  }
   
   changeVideo() {
     if(!this.player) return;
@@ -86,19 +92,9 @@ export class VideoPageComponent implements OnInit{
       case 'mp4':
         videoType = 'video/mp4';
         break;
-
-
-      // Rest of the code...
-
       case 'mkv':
         videoType = 'video/webm';
-        var options = {
-          video: document.getElementById('videojs-player'),
-          subUrl: `http://${this.serverIp}:8080/subtitles/${this.videoUrl}`,
-          fonts: ["fonts/Roboto-Regular.ttf", "fonts/Roboto-Bold.ttf"],
-          workerUrl: "/assets/js/subtitles-octopus-worker.js"
-        };
-        window.octopusInstance = new SubtitlesOctopus(options);
+        this.chargeSubtitles();
         break;
       default:
         videoType = 'video/mp4';
