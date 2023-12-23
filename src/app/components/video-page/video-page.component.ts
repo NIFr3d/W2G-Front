@@ -83,6 +83,12 @@ export class VideoPageComponent implements OnInit{
     };
     window.octopusInstance = new SubtitlesOctopus(options);
   }
+  deleteSubtitles(){
+    if(window.octopusInstance) {
+      window.octopusInstance.dispose();
+      window.octopusInstance = undefined;
+    }
+  }
   
   changeVideo() {
     if(!this.player) return;
@@ -90,10 +96,12 @@ export class VideoPageComponent implements OnInit{
     let videoType = '';
     switch(videourlsplit[videourlsplit.length - 1]) {
       case 'mp4':
+        this.deleteSubtitles();
         videoType = 'video/mp4';
         break;
       case 'mkv':
         videoType = 'video/webm';
+        this.deleteSubtitles();
         this.chargeSubtitles();
         break;
       default:
