@@ -1,27 +1,35 @@
-# W2G
+# W2G - Visionneur de vidéos synchronisé
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.4.
+Ce projet est un frontend Angular qui permet de visionner une vidéo de façon synchronisée avec d'autres personnes. Il nécessite l'utilisation du backend disponible à l'adresse suivante : [https://github.com/NIFr3d/W2G-Back](https://github.com/NIFr3d/W2G-Back).
 
-## Development server
+## Installation
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+1. Clonez ce dépôt sur votre machine locale :
 
-## Code scaffolding
+    ```shell
+    git clone https://github.com/NIFr3d/W2G.git
+    ```
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+2. Accédez au répertoire du projet :
 
-## Build
+    ```shell
+    cd W2G
+    ```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+3. Installez les dépendances nécessaires :
 
-## Running unit tests
+    ```shell
+    npm install
+    ```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Déploiement local
 
-## Running end-to-end tests
+1. Lancez l'application en mode développement :
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+    ```shell
+    npm run dev
+    ```
 
-## Further help
+2. Ouvrez votre navigateur et accédez à l'URL suivante : [http://localhost:3000](http://localhost:3000)
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+3. Vous devriez maintenant pouvoir utiliser l'application localement ou à distance si vous utilisez un VPN privé.
