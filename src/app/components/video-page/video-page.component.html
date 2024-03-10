@@ -4,6 +4,7 @@
 <div *ngIf="!connectionError"> 
     <p class="text-success"><i class="bi bi-cloud-check px-2"></i>Connexion au serveur de synchronisation établie</p>
 </div>
+
 <div class="p-2">
     <select [(ngModel)]="videoUrl" class="form-select my-2">
         <option *ngFor="let video of videos" [value]="video">{{video}}</option>

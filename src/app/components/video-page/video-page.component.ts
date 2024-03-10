@@ -33,9 +33,10 @@ export class VideoPageComponent implements OnInit{
   videoUrl = "";
 
   didSeek = false;
-
   
   ngOnInit(): void {
+    
+
     this.videoService.getVideos(this.serverIp).subscribe(videos => {
       this.videos = videos;
     });
@@ -137,5 +138,6 @@ export class VideoPageComponent implements OnInit{
         break;
     }
   } 
+
 
 }
