@@ -9,12 +9,19 @@ import { VideoPageComponent } from './components/video-page/video-page.component
 import { VideoService } from './video.service';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { IndexComponent } from './index/index.component';
+import { SerieComponent } from './serie/serie.component';
+import { EpisodeComponent } from './episode/episode.component';
+
 
 @NgModule({
   declarations: [
     AppComponent,
     VideoPageComponent,
-    VjsPlayerComponent
+    VjsPlayerComponent,
+    IndexComponent,
+    SerieComponent,
+    EpisodeComponent
   ],
   imports: [
     BrowserModule,

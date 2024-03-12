@@ -1,6 +1,10 @@
 <div class="body" [class.dark]="darkMode">
+    <h1 class="text-center py-2 ">
+        <a href="/" class="text-warning" style="text-decoration: none;">Rouleau Croustillant</a>
+
+    </h1>
     <div class="p-3">
-        <app-video-page></app-video-page>
+        <router-outlet></router-outlet>
     </div>
     
     <footer class="mx-auto fixed-bottom" style="width: fit-content;">
