@@ -1,9 +1,13 @@
 <div class="body" [class.dark]="darkMode">
     <div class="p-3">
+        <app-video-page></app-video-page>
+    </div>
+    
+    <footer class="mx-auto fixed-bottom" style="width: fit-content;">
         <div class="form-check form-switch">
             <input class="form-check-input" type="checkbox" id="darkModeSwitch" [(ngModel)]="darkMode" >
             <label class="form-check-label" for="darkModeSwitch">Mode sombre</label>
         </div>
-        <app-video-page></app-video-page>
-    </div>
+        <p>© 2024 - Fred</p>
+    </footer>
 </div>
