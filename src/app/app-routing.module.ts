@@ -8,7 +8,9 @@ import { EpisodeComponent } from './episode/episode.component';
 const routes: Routes = [
   {
     path: '',
-    component: VideoPageComponent
+    // component: VideoPageComponent
+    redirectTo: '/index',
+    pathMatch: 'full'
   },
   {
     path: 'index',

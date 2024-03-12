@@ -16,12 +16,12 @@ export class VideoService {
     return this.http.get<string[]>(`http://${serverIp}:8080/series`);
   }
 
-  getSeasons(serverIp : string, serie : string): Observable<Number[]> {
-    return this.http.get<Number[]>(`http://${serverIp}:8080/series/${serie}/seasons`);
+  getSeasons(serverIp : string, serie : string): Observable<string[]> {
+    return this.http.get<string[]>(`http://${serverIp}:8080/series/${serie}/seasons`);
   }
   
-  getEpisodes(serverIp : string, serie : string, season : string): Observable<Number[]> {
-    return this.http.get<Number[]>(`http://${serverIp}:8080/series/${serie}/${season}/episodes`);
+  getEpisodes(serverIp : string, serie : string, season : string): Observable<string[]> {
+    return this.http.get<string[]>(`http://${serverIp}:8080/series/${serie}/${season}/episodes`);
   }
 
   getOtherSeries(serverIp : string): Observable<string[]> {
