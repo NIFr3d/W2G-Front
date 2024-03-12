@@ -79,6 +79,7 @@ export class VideoPageComponent implements OnInit{
   chargeSubtitles() {
     var options = {
       video: document.getElementById('videojs-player_html5_api'),
+
       subUrl: `http://${this.serverIp}:8080/subtitles/${this.videoUrl}`,
       workerUrl: "/assets/js/subtitles-octopus-worker.js"
     };
@@ -99,6 +100,7 @@ export class VideoPageComponent implements OnInit{
       case 'mp4':
         this.deleteSubtitles();
         videoType = 'video/mp4';
+        this.chargeSubtitles();
         break;
       case 'mkv':
         videoType = 'video/webm';
@@ -117,12 +119,12 @@ export class VideoPageComponent implements OnInit{
   handleWsMessage(msg: any) {
     this.connectionError = false;
     console.dir(msg);
-    if(!this.player) return;
-    switch(msg.event) {
+    if (!this.player) return;
+    switch (msg.event) {
       case 'welcome':
         console.log('Connected to server');
         this.player.currentTime(msg.currentTime);
-        msg.paused? this.player.pause() : this.player.play();
+        msg.paused ? this.player.pause() : this.player.play();
         break;
       case 'play':
         this.player.play();
@@ -132,9 +134,12 @@ export class VideoPageComponent implements OnInit{
         this.player.currentTime(msg.currentTime);
         break;
       case 'setTime':
+        if (this.didSeek) return;
         this.player.currentTime(msg.currentTime);
         this.didSeek = true;
-        setTimeout(() => { this.didSeek = false; }, 300);
+        setTimeout(() => {
+          this.didSeek = false;
+        }, 500);
         break;
     }
   } 
