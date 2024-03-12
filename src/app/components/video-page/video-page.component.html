@@ -1,14 +1,24 @@
-<div *ngIf="connectionError">
-    <p class="text-danger"><i class="bi bi-cloud-minus px-2"></i>Erreur : Connexion au serveur de synchronisation impossible</p>
+<div class="text-center">
+    <div *ngIf="connectionError">
+        <p class="text-danger"><i class="bi bi-cloud-minus px-2"></i>Erreur : Connexion au serveur de synchronisation impossible</p>
+    </div>
+    <div *ngIf="!connectionError"> 
+        <p class="text-success"><i class="bi bi-cloud-check px-2"></i>Connexion au serveur de synchronisation établie</p>
+    </div>
 </div>
-<div *ngIf="!connectionError"> 
-    <p class="text-success"><i class="bi bi-cloud-check px-2"></i>Connexion au serveur de synchronisation établie</p>
+<div class="p-2 mx-auto mb-2 text-center" style="width: 60%;">
+    <div class="row">
+        <div class="col-md-auto text-center">
+            <select [(ngModel)]="videoUrl" class="form-select">
+                <option *ngFor="let video of videos" [value]="video">{{video}}</option>
+            </select>
+        </div>
+        <div class="col-sm-auto text-center">
+            <button class="btn btn-primary" (click)="changeVideo()">Charger</button>
+        </div>
+    </div>
 </div>
 
-<div class="p-2">
-    <select [(ngModel)]="videoUrl" class="form-select my-2">
-        <option *ngFor="let video of videos" [value]="video">{{video}}</option>
-    </select>
-    <button class="btn btn-primary" (click)="changeVideo()">Charger</button>
+<div class="media text-center">
+    <app-vjs-player [options]="videoJsOptions" (sendPlayer)="setPlayer($event)"></app-vjs-player>
 </div>
-<app-vjs-player [options]="videoJsOptions" (sendPlayer)="setPlayer($event)"></app-vjs-player>
