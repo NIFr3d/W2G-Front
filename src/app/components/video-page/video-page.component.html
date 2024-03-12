@@ -6,8 +6,8 @@
         <p class="text-success"><i class="bi bi-cloud-check px-2"></i>Connexion au serveur de synchronisation établie</p>
     </div>
 </div>
-<div class="p-2 mx-auto mb-2 text-center" style="width: 60%;">
-    <div class="row">
+<div class="p-2 mx-auto mb-2 text-center" style="width: fit-content;">
+    <div class="row" style="width: fit-content;">
         <div class="col-md-auto text-center">
             <select [(ngModel)]="videoUrl" class="form-select">
                 <option *ngFor="let video of videos" [value]="video">{{video}}</option>
