@@ -39,5 +39,8 @@ export class SerieComponent implements OnInit{
       this.episodes = episodes;
     });
   }
+  updateEpisodes(){
+    this.getEpisodes(this.selectedSeason);
+  }
 
 }

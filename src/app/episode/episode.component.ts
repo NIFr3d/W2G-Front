@@ -24,7 +24,8 @@ export class EpisodeComponent {
     autoplay: false,
     controls: true,
     sources: [],
-    textTrackSettings: true
+    textTrackSettings: true,
+    fluid: true
   };
   player : Player | undefined;
   webSocket! : WebSocketSubject<any>;
@@ -33,6 +34,7 @@ export class EpisodeComponent {
   serie : string = this.activatedRoute.snapshot.params['serie'];
   season : string = this.activatedRoute.snapshot.params['season'].length == 1 ? '0' + this.activatedRoute.snapshot.params['season'] : this.activatedRoute.snapshot.params['season'];
   episode : string = this.activatedRoute.snapshot.params['episode'].length == 1 ? '0' + this.activatedRoute.snapshot.params['episode'] : this.activatedRoute.snapshot.params['episode'];
+  nextEpisode : Episode | undefined;
 
   ngOnInit() : void {
     this.webSocket = webSocket(`ws://${this.serverIp}:8081`);
@@ -49,6 +51,13 @@ export class EpisodeComponent {
         }
       })
     ).subscribe();
+
+    this.videoService.getNextEpisode(this.serverIp, this.serie, this.season, this.episode).subscribe((nextEpisode) => {
+      this.nextEpisode = nextEpisode;
+      console.log(nextEpisode);
+      
+    });
+    
   }
 
   setPlayer(player: Player) {
@@ -110,5 +119,8 @@ export class EpisodeComponent {
         break;
     }
   } 
-
+  goToNextEpisode() {
+    let nextEpisodeUrl = `/serie/${this.serie}/${this.nextEpisode?.season}/${this.nextEpisode?.episode}`;
+    window.location.href = nextEpisodeUrl;
+  }
 }

@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import 'src/app/types/episode';
 
 @Injectable({
   providedIn: 'root'
@@ -32,4 +33,7 @@ export class VideoService {
     return this.http.get<string[]>(`http://${serverIp}:8080/search/${search}`);
   }
 
+  getNextEpisode(serverIp : string, serie : string, season : string, episode : string): Observable<Episode> {
+    return this.http.get<Episode>(`http://${serverIp}:8080/nextEpisode/${serie}/${season}/${episode}`);
+  }
 }

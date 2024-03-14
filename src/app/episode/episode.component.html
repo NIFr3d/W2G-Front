@@ -1,3 +1,22 @@
-<div class="media text-center">
+<div class="media text-center my-auto" style="max-width: 1280px;">
     <app-vjs-player [options]="videoJsOptions" (sendPlayer)="setPlayer($event)"></app-vjs-player>
+</div>
+<div class="text-center">
+    <h2>{{serie}} saison {{season}} épisode {{episode}}</h2>
+</div>
+<div class="container" style="width:400px;">
+    <div class="card" style="cursor: pointer;" (click)="goToNextEpisode()" *ngIf="nextEpisode">
+        <div class="card-body">
+            <h5 class="card-title">Prochain épisode</h5>
+            <div>
+                <img [src]="'http://' + serverIp + ':8080/thumbnail/' + serie" alt="Image de l'épisode" class="card-img-top" />
+                <p class="card-text">Saison {{nextEpisode.season}} Episode {{nextEpisode.episode}} </p>
+            </div>
+        </div>
+    </div>
+    <div class="card" *ngIf="!nextEpisode">
+        <div class="card-body">
+            <h5 class="card-title">Prochain épisode</h5>
+        <p class="card-text">Il n'y a pas d'épisode suivant</p>
+    </div>
 </div>

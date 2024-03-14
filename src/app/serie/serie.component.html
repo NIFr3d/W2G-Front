@@ -7,12 +7,12 @@
             <h4>Saison {{ seasons[0]}} :</h4>
         </ng-container>
         <ng-template #seasonDropdown>
-            <select [(ngModel)]="selectedSeason" class="form-select">
+            <select [(ngModel)]="selectedSeason" class="form-select" (change)="updateEpisodes()">
                 <option *ngFor="let season of seasons" [value]="season">Saison {{ season }}</option>
             </select>
         </ng-template>
     </div>
-    <div class="d-inline-block"  style="height:50vh; overflow-y: scroll;">   
+    <div class="d-inline-block"  style="height:60vh; overflow-y: scroll;">   
         <div *ngFor="let episode of episodes" class="p-3 d-inline-block" style="max-width: 25%; min-width: 10%;">
             <div class="card">
                 <img [src]="'http://' + serverIp + ':8080/thumbnail/' + serie" alt="Image de l'épisode" class="card-img-top" />

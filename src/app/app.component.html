@@ -1,13 +1,15 @@
-<div class="body" [class.dark]="darkMode">
-    <h1 class="text-center py-2 ">
-        <a href="/" class="text-warning" style="text-decoration: none;">Rouleau Croustillant</a>
+<div class="d-flex flex-column" [class.dark]="darkMode" style="height:100vh">
+    <header style="height:8vh">
+        <h1 class="text-center py-2 ">
+            <a href="/" class="text-warning" style="text-decoration: none;">Rouleau Croustillant</a>
 
-    </h1>
-    <div class="p-3">
+        </h1>
+    </header>
+    <div class="p-3 container overflow-auto" style="height:calc(100vh-8vh-8vh)">
         <router-outlet></router-outlet>
     </div>
     
-    <footer class="mx-auto fixed-bottom" style="width: fit-content;">
+    <footer class="mx-auto mt-auto" style="width: fit-content; height: 8vh">
         <div class="form-check form-switch">
             <input class="form-check-input" type="checkbox" id="darkModeSwitch" [(ngModel)]="darkMode" >
             <label class="form-check-label" for="darkModeSwitch">Mode sombre</label>
