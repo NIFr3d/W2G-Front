@@ -35,6 +35,7 @@ export class EpisodeComponent {
   season : string = this.activatedRoute.snapshot.params['season'].length == 1 ? '0' + this.activatedRoute.snapshot.params['season'] : this.activatedRoute.snapshot.params['season'];
   episode : string = this.activatedRoute.snapshot.params['episode'].length == 1 ? '0' + this.activatedRoute.snapshot.params['episode'] : this.activatedRoute.snapshot.params['episode'];
   nextEpisode : Episode | undefined;
+  private triggeredByServer = false;
 
   ngOnInit() : void {
     this.webSocket = webSocket(`ws://${this.serverIp}:8081`);
@@ -64,14 +65,26 @@ export class EpisodeComponent {
     this.player = player;
     this.player.on('play', () => {
       if(!this.player) return;
+      if(this.triggeredByServer) {
+        this.triggeredByServer = false;
+        return;
+      }
       this.webSocket.next(JSON.stringify({event: 'play'}));
     });
     this.player.on('pause', () => {
       if(!this.player) return;
+      if(this.triggeredByServer) {
+        this.triggeredByServer = false;
+        return;
+      }
       this.webSocket.next(JSON.stringify({event: 'pause', currentTime: this.player.currentTime()}));
     });
     this.player.on('seeked', () => {
       if(!this.player || this.didSeek) return;
+      if(this.triggeredByServer) {
+        this.triggeredByServer = false;
+        return;
+      }
       this.webSocket.next(JSON.stringify({event: 'setTime', currentTime: this.player.currentTime()}));
     });
     this.player.on('waiting', () => {
@@ -99,18 +112,25 @@ export class EpisodeComponent {
     switch (msg.event) {
       case 'welcome':
         console.log('Connected to server');
+        this.webSocket.next(JSON.stringify({event: 'joinRoom', room: `${this.serie}/${this.season}/${this.episode}`}));
+        break;
+      case 'joinedRoom':
+        this.triggeredByServer = true;
         this.player.currentTime(msg.currentTime);
         msg.paused ? this.player.pause() : this.player.play();
         break;
       case 'play':
+        this.triggeredByServer = true;
         this.player.play();
         break;
       case 'pause':
+        this.triggeredByServer = true;
         this.player.pause();
         this.player.currentTime(msg.currentTime);
         break;
       case 'setTime':
         if (this.didSeek) return;
+        this.triggeredByServer = true;
         this.player.currentTime(msg.currentTime);
         this.didSeek = true;
         setTimeout(() => {
