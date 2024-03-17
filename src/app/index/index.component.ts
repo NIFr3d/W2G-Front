@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { VideoService } from '../video.service';
+import 'src/app/types/resumewatching';
 
 @Component({
   selector: 'app-index',
@@ -14,6 +15,8 @@ export class IndexComponent implements OnInit{
 
   otherSeries: string[] = [];
 
+  resumeWatching: resumeWatching[] = [];
+
   isSearching = false;
 
   searchResults: string[] = [];
@@ -23,6 +26,9 @@ export class IndexComponent implements OnInit{
   ngOnInit() {
     this.videoService.getOtherSeries(this.serverIp).subscribe(series => {
       this.otherSeries = series;
+    });
+    this.videoService.getResumeWatching(this.serverIp).subscribe(resumeWatching => {
+      this.resumeWatching = resumeWatching;
     });
   }
 

@@ -36,6 +36,7 @@ export class EpisodeComponent {
   episode : string = this.activatedRoute.snapshot.params['episode'].length == 1 ? '0' + this.activatedRoute.snapshot.params['episode'] : this.activatedRoute.snapshot.params['episode'];
   nextEpisode : Episode | undefined;
   private triggeredByServer = false;
+  private lastSentTime = 0;
 
   ngOnInit() : void {
     this.webSocket = webSocket(`ws://${this.serverIp}:8081`);
@@ -91,9 +92,21 @@ export class EpisodeComponent {
       if(!this.player) return;
       this.webSocket.next(JSON.stringify({event: 'pause', currentTime: this.player.currentTime()}));
     });
+    this.player.on('loadedmetadata', () => {
+      if(!this.player) return;
+      const t = this.activatedRoute.snapshot.queryParamMap.get('t');
+      if(t) this.player.currentTime(parseInt(t));
+    });
     this.player.src({ type: "video/mp4", src: `http://${this.serverIp}:8080/episode/${this.serie}/${this.season}/${this.episode}` });
     this.player.load();
     this.chargeSubtitles();
+
+    setInterval(() => {
+      if (this.player && this.player.currentTime() && this.player.currentTime() !== this.lastSentTime) {
+        this.webSocket.next(JSON.stringify({ event: 'updateResumeWatching', currentTime: this.player.currentTime(), serie: this.serie, season: this.season, episode: this.episode}));
+        this.lastSentTime = this.player.currentTime() || 0;
+      }
+    }, 1000);
   }
 
   chargeSubtitles() {
