@@ -1,19 +1,41 @@
-<div class="d-flex flex-column" [class.dark]="darkMode" style="height:100vh">
-    <header style="height:8vh">
-        <h1 class="text-center py-2 ">
-            <a href="/" class="text-warning" style="text-decoration: none;">Rouleau Croustillant</a>
-
-        </h1>
-    </header>
-    <div class="p-3 container overflow-auto" style="height:calc(100vh-8vh-8vh)">
-        <router-outlet></router-outlet>
+<div class="d-flex flex-column" [class.dark]="darkMode" style="height: 100vh">
+  <header
+    style="height: fit-content"
+    class="bg-dark bg gradient d-flex justify-content-between align-items-center"
+  >
+    <h3 class="text-left py-2 mx-4">
+      <a href="/" class="text-warning" style="text-decoration: none"
+        >Rouleau Croustillant</a
+      >
+    </h3>
+    <div *ngIf="isLoggedIn">
+      <div class="d-flex justify-content-between mx-2">
+        <button class="btn btn-dark text-warning">
+          Connecté en tant que : {{ username }}
+        </button>
+        <button class="btn btn-dark text-warning" (click)="onLogout()">
+          Déconnexion
+        </button>
+      </div>
     </div>
-    
-    <footer class="mx-auto mt-auto" style="width: fit-content; height: 8vh">
-        <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="darkModeSwitch" [(ngModel)]="darkMode" >
-            <label class="form-check-label" for="darkModeSwitch">Mode sombre</label>
-        </div>
-        <p>© 2024 - Fred</p>
-    </footer>
+  </header>
+  <div class="overflow-auto" style="height: calc(100vh-8vh-8vh)">
+    <router-outlet></router-outlet>
+  </div>
+
+  <footer
+    class="mx-auto mt-auto bg-dark bg gradient text-center text-light py-2"
+    style="width: 100%; height: fit-content"
+  >
+    <div class="form-check form-switch mx-auto" style="width: fit-content">
+      <input
+        class="form-check-input"
+        type="checkbox"
+        id="darkModeSwitch"
+        [(ngModel)]="darkMode"
+      />
+      <label class="form-check-label" for="darkModeSwitch">Mode sombre</label>
+    </div>
+    <span>© 2024 - Fred</span>
+  </footer>
 </div>

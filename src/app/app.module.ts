@@ -5,31 +5,25 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 import { VjsPlayerComponent } from './components/vjs-player/vjs-player.component';
-import { VideoPageComponent } from './components/video-page/video-page.component';
 import { VideoService } from './video.service';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { IndexComponent } from './index/index.component';
-import { SerieComponent } from './serie/serie.component';
-import { EpisodeComponent } from './episode/episode.component';
-
+import { IndexComponent } from './components/index/index.component';
+import { SerieComponent } from './components/serie/serie.component';
+import { EpisodeComponent } from './components/episode/episode.component';
+import { AuthService } from './auth.service';
+import { CookieService } from 'ngx-cookie-service';
 
 @NgModule({
   declarations: [
     AppComponent,
-    VideoPageComponent,
     VjsPlayerComponent,
     IndexComponent,
     SerieComponent,
-    EpisodeComponent
+    EpisodeComponent,
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule,
-    FormsModule
-  ],
-  providers: [VideoService],
-  bootstrap: [AppComponent]
+  imports: [BrowserModule, AppRoutingModule, HttpClientModule, FormsModule],
+  providers: [VideoService, AuthService, CookieService],
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

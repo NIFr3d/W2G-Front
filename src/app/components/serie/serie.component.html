@@ -1,0 +1,44 @@
+<div>
+  <h2>
+    {{ serie }}
+  </h2>
+  <div class="py-3">
+    <ng-container *ngIf="seasons.length === 1; else seasonDropdown">
+      <h4>Saison {{ seasons[0] }} :</h4>
+    </ng-container>
+    <ng-template #seasonDropdown>
+      <select
+        [(ngModel)]="selectedSeason"
+        class="form-select"
+        (change)="updateEpisodes()"
+      >
+        <option *ngFor="let season of seasons" [value]="season">
+          Saison {{ season }}
+        </option>
+      </select>
+    </ng-template>
+  </div>
+  <div class="d-inline-block" style="height: 60vh; overflow-y: scroll">
+    <div
+      *ngFor="let episode of episodes"
+      class="p-3 d-inline-block"
+      style="max-width: 25%; min-width: 10%"
+    >
+      <div class="card">
+        <img
+          [src]="'http://' + serverIp + ':8080/thumbnail/' + serie"
+          alt="Image de l'épisode"
+          class="card-img-top"
+        />
+        <div class="card-body">
+          <h5 class="card-title">Episode {{ episode }}</h5>
+          <a
+            [routerLink]="['/serie', serie, selectedSeason, episode]"
+            class="stretched-link"
+          >
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

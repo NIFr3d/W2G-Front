@@ -1,18 +1,32 @@
-import {Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, ViewEncapsulation} from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild,
+  ViewEncapsulation,
+} from '@angular/core';
 import videojs from 'video.js';
-import Player from "video.js/dist/types/player";
+import Player from 'video.js/dist/types/player';
 
 @Component({
   selector: 'app-vjs-player',
   template: `
-    <video #target class="video-js" controls muted playsinline preload="none"></video>
+    <video
+      #target
+      class="video-js"
+      controls
+      muted
+      playsinline
+      preload="none"
+    ></video>
   `,
-  styleUrls: [
-    './vjs-player.component.scss'
-  ],
+  styleUrls: ['./vjs-player.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-
 export class VjsPlayerComponent implements OnInit, OnDestroy {
   @ViewChild('target', { static: true })
   target!: ElementRef;
@@ -34,13 +48,11 @@ export class VjsPlayerComponent implements OnInit, OnDestroy {
 
   player!: Player;
 
-  constructor(
-    private elementRef: ElementRef,
-  ) {}
+  constructor(private elementRef: ElementRef) {}
 
   // Instantiate a Video.js player OnInit
   ngOnInit() {
-    this.target.nativeElement.id = "videojs-player"
+    this.target.nativeElement.id = 'videojs-player';
     this.player = videojs(this.target.nativeElement, this.options);
     this.sendPlayer.emit(this.player);
   }

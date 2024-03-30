@@ -1,0 +1,121 @@
+<div *ngIf="isLoggedIn" class="p-3">
+  <div class="p-3">
+    <div class="input-group mb-3">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Rechercher une série"
+        [(ngModel)]="search"
+        (input)="searchSeries()"
+      />
+      <div class="input-group-append">
+        <button
+          class="btn btn-outline-secondary"
+          type="button"
+          (click)="searchSeries()"
+        >
+          <i class="bi bi-search"></i>
+        </button>
+      </div>
+    </div>
+    <div *ngIf="searchResults.length > 0">
+      <h4>Résultats de recherche</h4>
+      <div class="row">
+        <div *ngFor="let serie of searchResults" class="col-3 card">
+          <img
+            [src]="'http://' + serverIp + ':8080/thumbnail/' + serie"
+            alt="Image de la série"
+            class="card-img-top"
+          />
+          <div class="card-body">
+            <h5 class="card-title">
+              {{ serie }}
+            </h5>
+            <a [routerLink]="['/serie', serie]" class="stretched-link"> </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="px-3" *ngIf="!isSearching">
+    <div *ngIf="resumeWatching.length > 0">
+      <h4>Reprendre la lecture</h4>
+      <div class="row">
+        <div *ngFor="let serie of resumeWatching" class="col-3 card">
+          <img
+            [src]="'http://' + serverIp + ':8080/thumbnail/' + serie.serie"
+            alt="Image de la série"
+            class="card-img-top"
+            style="margin-top: 5px; margin-bottom: 0"
+          />
+          <div
+            class="position-absolute bottom-0 start-0"
+            [style.width.%]="serie.progression"
+            class="card-img-top"
+            style="
+              height: 5px;
+              background-color: blue;
+              border-radius: 0;
+              margin-top: -5px;
+            "
+          ></div>
+          <div class="card-body">
+            <h5 class="card-title">
+              {{ serie.serie }}
+            </h5>
+            <p class="card-text">
+              Saison {{ serie.season }} Episode {{ serie.episode }}
+            </p>
+            <a
+              [routerLink]="[
+                '/serie',
+                serie.serie,
+                serie.season,
+                serie.episode
+              ]"
+              [queryParams]="{ t: serie.currentTime }"
+              class="stretched-link"
+            >
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <h4>Autres séries</h4>
+      <div class="row">
+        <div *ngFor="let serie of otherSeries" class="col-3 card">
+          <img
+            [src]="'http://' + serverIp + ':8080/thumbnail/' + serie"
+            alt="Image de la série"
+            class="card-img-top"
+          />
+
+          <div class="card-body">
+            <h5 class="card-title">
+              {{ serie }}
+            </h5>
+            <a [routerLink]="['/serie', serie]" class="stretched-link"> </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="p-3 mx-auto" *ngIf="!isLoggedIn" style="width: 50vw">
+  <h2>Connexion</h2>
+  <form (ngSubmit)="onLogin()">
+    <div class="mb-3">
+      <label for="username" class="form-label">Nom d'utilisateur</label>
+      <input
+        type="text"
+        class="form-control"
+        id="username"
+        [(ngModel)]="username"
+        name="username"
+        required
+      />
+    </div>
+    <button type="submit" class="btn btn-primary">Se connecter</button>
+  </form>
+</div>
