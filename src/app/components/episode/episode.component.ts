@@ -80,7 +80,7 @@ export class EpisodeComponent {
 
   setPlayer(player: Player) {
     this.player = player;
-    this.player.on('play', () => {
+    this.player.on('playing', () => {
       if (!this.player) return;
       if (this.triggeredByServer) {
         this.triggeredByServer = false;
@@ -122,7 +122,6 @@ export class EpisodeComponent {
           currentTime: this.player.currentTime(),
         })
       );
-      this.player.pause();
     });
     this.player.on('loadedmetadata', () => {
       if (!this.player) return;
