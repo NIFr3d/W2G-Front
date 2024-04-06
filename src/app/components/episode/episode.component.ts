@@ -49,6 +49,8 @@ export class EpisodeComponent {
   private lastSentTime = 0;
   private username = '';
   members = [];
+  subtitlesAvailable: string[] = [];
+  selectedSubtitle: string | null = null;
 
   ngOnInit(): void {
     this.webSocket = webSocket(`ws://${this.serverIp}:8081`);
@@ -72,10 +74,23 @@ export class EpisodeComponent {
       .getNextEpisode(this.serverIp, this.serie, this.season, this.episode)
       .subscribe((nextEpisode) => {
         this.nextEpisode = nextEpisode;
-        console.log(nextEpisode);
       });
 
     this.username = this.authService.getUsername();
+
+    this.videoService
+      .getAvailableSubtitles(
+        this.serverIp,
+        this.serie,
+        this.season,
+        this.episode
+      )
+      .subscribe((subtitles) => {
+        this.subtitlesAvailable = subtitles;
+        this.selectedSubtitle = this.subtitlesAvailable[0];
+
+        this.chargeSubtitles();
+      });
   }
 
   setPlayer(player: Player) {
@@ -133,7 +148,6 @@ export class EpisodeComponent {
       src: `http://${this.serverIp}:8080/episode/${this.serie}/${this.season}/${this.episode}`,
     });
     this.player.load();
-    this.chargeSubtitles();
 
     setInterval(() => {
       if (
@@ -156,13 +170,23 @@ export class EpisodeComponent {
     }, 1000);
   }
 
-  chargeSubtitles() {
-    var options = {
-      video: document.getElementById('videojs-player_html5_api'),
-      subUrl: `http://${this.serverIp}:8080/episode/${this.serie}/${this.season}/${this.episode}/subtitles`,
-      workerUrl: '/assets/js/subtitles-octopus-worker.js',
-    };
-    window.octopusInstance = new SubtitlesOctopus(options);
+  chargeSubtitles(): void {
+    if (!document.getElementById('videojs-player_html5_api')) {
+      setTimeout(() => this.chargeSubtitles(), 1000);
+      return;
+    }
+    console.log(this.selectedSubtitle);
+    if (this.selectedSubtitle === null) {
+      window.octopusInstance.dispose();
+      return;
+    } else {
+      var options = {
+        video: document.getElementById('videojs-player_html5_api'),
+        subUrl: `http://${this.serverIp}:8080/subtitles/${this.serie}/${this.season}/${this.episode}/${this.selectedSubtitle}`,
+        workerUrl: '/assets/js/subtitles-octopus-worker.js',
+      };
+      window.octopusInstance = new SubtitlesOctopus(options);
+    }
   }
 
   handleWsMessage(msg: any) {

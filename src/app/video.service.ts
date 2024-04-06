@@ -61,4 +61,15 @@ export class VideoService {
       `http://${serverIp}:8080/resumeWatching/${username}`
     );
   }
+
+  getAvailableSubtitles(
+    serverIp: string,
+    serie: string,
+    season: string,
+    episode: string
+  ): Observable<string[]> {
+    return this.http.get<string[]>(
+      `http://${serverIp}:8080/subtitles/${serie}/${season}/${episode}`
+    );
+  }
 }
