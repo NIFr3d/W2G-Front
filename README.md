@@ -7,13 +7,13 @@ Ce projet est un frontend Angular qui permet de visionner une vidéo de façon s
 1. Clonez ce dépôt sur votre machine locale :
 
     ```shell
-    git clone https://github.com/NIFr3d/W2G.git
+    git clone https://github.com/NIFr3d/W2G-Front.git
     ```
 
 2. Accédez au répertoire du projet :
 
     ```shell
-    cd W2G
+    cd W2G-Front
     ```
 
 3. Installez les dépendances nécessaires :
