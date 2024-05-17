@@ -21,7 +21,16 @@
         <h5 class="card-title">Prochain épisode</h5>
         <div>
           <img
-            [src]="'http://' + serverIp + ':8080/thumbnail/' + serie"
+            [src]="
+              'http://' +
+              serverIp +
+              ':8080/thumbnail/' +
+              serie +
+              '/' +
+              nextEpisode.season +
+              '/' +
+              nextEpisode.episode
+            "
             alt="Image de l'épisode"
             class="card-img-top"
           />
