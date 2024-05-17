@@ -5,6 +5,7 @@ import { tap } from 'rxjs';
 import { VideoService } from 'src/app/video.service';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from 'src/app/auth.service';
+import 'src/app/types/member';
 declare var SubtitlesOctopus: any;
 declare global {
   interface Window {
@@ -48,7 +49,7 @@ export class EpisodeComponent {
   private triggeredByServer = false;
   private lastSentTime = 0;
   private username = '';
-  members = [];
+  members: Member[] = [];
   subtitlesAvailable: string[] = [];
   selectedSubtitle: string | null = null;
 
@@ -237,4 +238,17 @@ export class EpisodeComponent {
     let nextEpisodeUrl = `/serie/${this.serie}/${this.nextEpisode?.season}/${this.nextEpisode?.episode}`;
     window.location.href = nextEpisodeUrl;
   }
+
+  convertTimeFormat(time: string) {
+    const seconds = parseInt(time, 10);
+    const minutes = Math.floor(seconds / 60);
+    const formattedSeconds = seconds % 60 < 10 ? `0${seconds % 60}` : seconds % 60;
+    const formattedMinutes = minutes % 60 < 10 ? `0${minutes}` : minutes;
+    const formattedTime = `${formattedMinutes}:${formattedSeconds}`;
+    return formattedTime;
+  }
+  ngOnDestroy() {
+    this.webSocket.complete();
+  }
+
 }

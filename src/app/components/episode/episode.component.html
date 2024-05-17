@@ -52,7 +52,11 @@
       </div>
       <ul>
         <li *ngFor="let member of members">
-          {{ member }}
+          {{
+            member.username +
+              " : " +
+              (member.time === null ? "Non lancé" : convertTimeFormat(member.time))
+          }}
         </li>
       </ul>
     </div>
