@@ -1,8 +1,7 @@
-// This is the root layout component for your Next.js app.
-// Learn more: https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts#root-layout-required
-import { Inter } from "next/font/google";
+import { Cookie, Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 import "./globals.css";
+import { CookiesProvider } from "next-client-cookies/server";
 
 const fontHeading = Inter({
   subsets: ["latin"],
@@ -16,13 +15,17 @@ const fontBody = Inter({
   variable: "--font-body",
 });
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default async function Layout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
       <body
         className={cn("antialiased", fontHeading.variable, fontBody.variable)}
       >
-        {children}
+        <CookiesProvider>{children}</CookiesProvider>
       </body>
     </html>
   );
