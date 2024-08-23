@@ -1,4 +1,3 @@
 {
-  "parser": "@typescript-eslint/parser",
-  "ignores": [".next/*"]
+  "parser": "@typescript-eslint/parser"
 }

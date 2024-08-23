@@ -6,7 +6,7 @@ export default function middleware(req: NextRequest) {
   const role = req.cookies.get("role")?.value;
 
   if (req.nextUrl.pathname.endsWith("/admin") && role !== "ADMIN") {
-    return NextResponse.redirect(new URL("/"));
+    return NextResponse.redirect(new URL("/", req.nextUrl.origin));
   }
   if (
     authentifiedRoutes.some((route) => req.nextUrl.pathname.endsWith(route)) &&
