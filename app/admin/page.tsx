@@ -24,6 +24,17 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function Component() {
   const apiUrl = process.env.API_URL ?? "http://localhost:8080";
@@ -76,7 +87,14 @@ export default function Component() {
   }, []);
 
   const handleEditSeries = (id: number) => {};
-  const handleDeleteSeries = (id: number) => {};
+  const handleDeleteSeries = (id: number) => {
+    fetch(`${apiUrl}/serie/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${cookies.get("token")}`,
+      },
+    });
+  };
   return (
     <div className="w-full min-h-screen bg-muted/40 py-8">
       <div className="max-w-6xl mx-auto px-4 md:px-6">
@@ -166,12 +184,30 @@ export default function Component() {
                   >
                     Modifier
                   </Button>
-                  <Button
-                    variant="destructive"
-                    onClick={() => handleDeleteSeries(series.id)}
-                  >
-                    Supprimer
-                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive">Supprimer</Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Etes-vous sûr ?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Tous les fichiers liés à la série seront supprimés.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogAction asChild>
+                          <Button
+                            variant="destructive"
+                            onClick={() => handleDeleteSeries(series.id)}
+                          >
+                            Supprimer
+                          </Button>
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </CardFooter>
               </Card>
             ))}
