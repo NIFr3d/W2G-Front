@@ -3,7 +3,6 @@
 import type { Serie } from "@/lib/types";
 
 import { useEffect, useState } from "react";
-import { useCookies } from "next-client-cookies";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -37,8 +36,6 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export default function Component() {
-  const apiUrl = process.env.API_URL ?? "http://localhost:8080";
-  const cookies = useCookies();
   const [series, setSeries] = useState<Serie[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const filteredSeries = series.filter((show) =>
@@ -53,21 +50,14 @@ export default function Component() {
     const thumbnail = formData.get("thumbnail") as File;
     console.log(thumbnail);
 
-    const response = await fetch(`${apiUrl}/serie`, {
+    const response = await fetch("/api/serie", {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${cookies.get("token")}`,
-      },
       body: formData,
     });
 
     if (response.ok) {
       // Refresh the series list
-      fetch(`${apiUrl}/serie`, {
-        headers: {
-          Authorization: `Bearer ${cookies.get("token")}`,
-        },
-      })
+      fetch("/api/serie")
         .then((res) => res.json())
         .then((data) => setSeries(data));
     } else {
@@ -77,29 +67,22 @@ export default function Component() {
   };
 
   useEffect(() => {
-    fetch(`${apiUrl}/serie`, {
-      headers: {
-        Authorization: `Bearer ${cookies.get("token")}`,
-      },
-    })
+    fetch("/api/serie")
       .then((res) => res.json())
       .then((data) => setSeries(data));
   }, []);
 
   const handleEditSeries = (id: number) => {};
   const handleDeleteSeries = (id: number) => {
-    fetch(`${apiUrl}/serie/${id}`, {
+    fetch(`/api/serie/${id}`, {
       method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${cookies.get("token")}`,
-      },
     });
   };
   return (
     <div className="w-full min-h-screen bg-muted/40 py-8">
       <div className="max-w-6xl mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+          <h1 className="text-2xl font-bold">Panneau d'administration</h1>
           <Dialog>
             <DialogTrigger className="h-10 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90">
               Ajouter une série
@@ -164,7 +147,7 @@ export default function Component() {
                 <CardHeader>
                   <div className="rounded-lg overflow-hidden aspect-video">
                     <img
-                      src="/placeholder.svg"
+                      src={"/api/serie/" + series.id + "/thumbnail"}
                       alt={`${series.title} Thumbnail`}
                       width={800}
                       height={450}

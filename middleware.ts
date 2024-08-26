@@ -4,6 +4,7 @@ const authentifiedRoutes = ["/", "/profile"];
 
 export default function middleware(req: NextRequest) {
   const role = req.cookies.get("role")?.value;
+  const token = req.cookies.get("token")?.value;
 
   if (req.nextUrl.pathname.endsWith("/admin") && role !== "ADMIN") {
     return NextResponse.redirect(new URL("/", req.nextUrl.origin));
@@ -15,5 +16,7 @@ export default function middleware(req: NextRequest) {
   ) {
     return NextResponse.redirect(new URL("/login", req.nextUrl.origin));
   }
-  return NextResponse.next();
+  const response = NextResponse.next();
+  response.headers.set("Authorization", `Bearer ${token}`);
+  return response;
 }
