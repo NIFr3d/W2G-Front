@@ -7,18 +7,26 @@ import {
   SelectGroup,
   SelectItem,
 } from "@/components/ui/select";
+import { Serie } from "@/lib/types";
 import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Component() {
   const params = useParams();
   const serieId = params.id;
+  const [serie, setSerie] = useState<Serie | null>(null);
+  useEffect(() => {
+    fetch(`/api/serie/${serieId}`)
+      .then((res) => res.json())
+      .then(setSerie);
+  }, [serieId]);
 
   return (
     <main className="w-full max-w-6xl mx-auto py-12 px-4 md:px-6">
       <div className="grid md:grid-cols-2 gap-8 items-start">
         <div className="rounded-lg overflow-hidden">
           <img
-            src="/placeholder.svg"
+            src={`/api/serie/${serie?.id}/thumbnail`}
             alt="Series Thumbnail"
             width={400}
             height={500}
@@ -28,11 +36,9 @@ export default function Component() {
         </div>
         <div className="grid gap-4">
           <div>
-            <h1 className="text-3xl font-bold">Stranger Things {serieId}</h1>
+            <h1 className="text-3xl font-bold">{serie?.title}</h1>
             <p className="text-muted-foreground">
-              When a young boy vanishes, a small town uncovers a mystery
-              involving secret experiments, terrifying supernatural forces, and
-              one very strange little girl.
+              {serie?.description || "Chargement..."}
             </p>
           </div>
           <div className="bg-muted rounded-lg p-4">

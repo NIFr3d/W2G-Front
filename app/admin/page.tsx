@@ -34,22 +34,25 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Component() {
   const [series, setSeries] = useState<Serie[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const filteredSeries = series.filter((show) =>
-    show.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [filteredSeries, setFilteredSeries] = useState<Serie[]>([]);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    setFilteredSeries(
+      series.filter((show) =>
+        show.title.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    );
+  }, [searchTerm, series]);
 
   const handleSaveNewSeries = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const title = formData.get("title") as string;
-    const description = formData.get("description") as string;
-    const thumbnail = formData.get("thumbnail") as File;
-    console.log(thumbnail);
-
     const response = await fetch("/api/serie", {
       method: "POST",
       body: formData,
@@ -61,8 +64,11 @@ export default function Component() {
         .then((res) => res.json())
         .then((data) => setSeries(data));
     } else {
-      // Handle error
-      console.error("Failed to save new series");
+      toast({
+        title: `Erreur ${response.status}`,
+        description: response.text(),
+        variant: "destructive",
+      });
     }
   };
 
@@ -76,6 +82,8 @@ export default function Component() {
   const handleDeleteSeries = (id: number) => {
     fetch(`/api/serie/${id}`, {
       method: "DELETE",
+    }).then(() => {
+      setSeries(series.filter((serie) => serie.id !== id));
     });
   };
   return (
@@ -142,13 +150,13 @@ export default function Component() {
             />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredSeries.map((series) => (
-              <Card key={series.id}>
+            {filteredSeries.map((serie) => (
+              <Card key={serie.id}>
                 <CardHeader>
                   <div className="rounded-lg overflow-hidden aspect-video">
                     <img
-                      src={"/api/serie/" + series.id + "/thumbnail"}
-                      alt={`${series.title} Thumbnail`}
+                      src={`/api/serie/${serie.id}/thumbnail`}
+                      alt={`${serie.title} Thumbnail`}
                       width={800}
                       height={450}
                       className="w-full h-full object-cover"
@@ -157,13 +165,13 @@ export default function Component() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <h2 className="text-xl font-bold">{series.title}</h2>
-                  <p className="text-muted-foreground">{series.description}</p>
+                  <h2 className="text-xl font-bold">{serie.title}</h2>
+                  <p className="text-muted-foreground">{serie.description}</p>
                 </CardContent>
                 <CardFooter className="flex items-center justify-between">
                   <Button
                     variant="outline"
-                    onClick={() => handleEditSeries(series.id)}
+                    onClick={() => handleEditSeries(serie.id)}
                   >
                     Modifier
                   </Button>
@@ -183,7 +191,7 @@ export default function Component() {
                         <AlertDialogAction asChild>
                           <Button
                             variant="destructive"
-                            onClick={() => handleDeleteSeries(series.id)}
+                            onClick={() => handleDeleteSeries(serie.id)}
                           >
                             Supprimer
                           </Button>

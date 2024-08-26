@@ -4,6 +4,7 @@ import "./globals.css";
 import { CookiesProvider } from "next-client-cookies/server";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import { Toaster } from "@/components/ui/toaster";
 
 const fontHeading = Inter({
   subsets: ["latin"],
@@ -34,6 +35,7 @@ export default async function Layout({
             <Footer />
           </div>
         </CookiesProvider>
+        <Toaster />
       </body>
     </html>
   );
