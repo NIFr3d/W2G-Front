@@ -23,9 +23,7 @@ export default function Header() {
   const role = cookies.get("role");
 
   const handleLogOut = async () => {
-    await fetch(
-      (process.env.API_URL ?? "http://localhost:8080") + "/auth/logout"
-    );
+    await fetch("/api/auth/logout");
     cookies.remove("token");
     cookies.remove("username");
     cookies.remove("role");

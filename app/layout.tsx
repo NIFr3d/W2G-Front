@@ -28,6 +28,7 @@ export default async function Layout({
       <body
         className={cn("antialiased", fontHeading.variable, fontBody.variable)}
       >
+        <title>W2G</title>
         <CookiesProvider>
           <div className="flex flex-col min-h-dvh">
             <Header />

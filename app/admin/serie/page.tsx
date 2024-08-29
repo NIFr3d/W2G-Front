@@ -35,6 +35,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/components/ui/use-toast";
+import Link from "next/link";
 
 export default function Component() {
   const [series, setSeries] = useState<Serie[]>([]);
@@ -169,12 +170,14 @@ export default function Component() {
                   <p className="text-muted-foreground">{serie.description}</p>
                 </CardContent>
                 <CardFooter className="flex items-center justify-between">
-                  <Button
-                    variant="outline"
-                    onClick={() => handleEditSeries(serie.id)}
-                  >
-                    Modifier
-                  </Button>
+                  <Link href={`/admin/serie/${serie.id}`}>
+                    <Button
+                      variant="outline"
+                      onClick={() => handleEditSeries(serie.id)}
+                    >
+                      Modifier
+                    </Button>
+                  </Link>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button variant="destructive">Supprimer</Button>

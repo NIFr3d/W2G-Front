@@ -6,7 +6,7 @@ export default function middleware(req: NextRequest) {
   const role = req.cookies.get("role")?.value;
   const token = req.cookies.get("token")?.value;
 
-  if (req.nextUrl.pathname.endsWith("/admin") && role !== "ADMIN") {
+  if (req.nextUrl.pathname.includes("/admin") && role !== "ADMIN") {
     return NextResponse.redirect(new URL("/", req.nextUrl.origin));
   }
   if (
@@ -15,6 +15,9 @@ export default function middleware(req: NextRequest) {
     role !== "USER"
   ) {
     return NextResponse.redirect(new URL("/login", req.nextUrl.origin));
+  }
+  if (req.nextUrl.pathname === "/admin" && role === "ADMIN") {
+    return NextResponse.redirect(new URL("/admin/serie", req.nextUrl.origin));
   }
   const response = NextResponse.next();
   response.headers.set("Authorization", `Bearer ${token}`);
