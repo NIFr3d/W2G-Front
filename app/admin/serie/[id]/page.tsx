@@ -99,7 +99,30 @@ export default function Page() {
         });
       });
   };
-  const handleRemoveSeason = (seasonNumber: Number) => {};
+  const handleRemoveSeason = (seasonId: Number) => {
+    setIsLoading(true);
+    fetch(`/api/serie/${serieId}/season/${seasonId}`, {
+      method: "DELETE",
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          throw new Error(await res.text());
+        } else {
+          fetch(`/api/serie/${serieId}/season`)
+            .then((res) => res.json())
+            .then(setSeasons);
+        }
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        toast({
+          title: "Erreur",
+          description: error.message,
+          variant: "destructive",
+        });
+        setIsLoading(false);
+      });
+  };
 
   const handleSaveThumbnail = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
