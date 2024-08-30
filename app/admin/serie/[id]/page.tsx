@@ -18,7 +18,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { ChevronUp, ChevronDown } from "lucide-react";
+import { ChevronUp, ChevronDown, Edit2, Save } from "lucide-react";
 
 export default function Page() {
   const { toast } = useToast();
@@ -31,6 +31,10 @@ export default function Page() {
   const [seasons, setSeasons] = useState<Season[]>([]);
   const [videos, setVideos] = useState<Video[]>([]);
   const [expandedSeason, setExpandedSeason] = useState<number | null>(null);
+  const [editingSeasonId, setEditingSeasonId] = useState<number | null>(null);
+  const [editedSeasonNumber, setEditedSeasonNumber] = useState<number | null>(
+    null
+  );
 
   useEffect(() => {
     fetch(`/api/serie/${serieId}`)
@@ -39,7 +43,7 @@ export default function Page() {
     fetch(`/api/serie/${serieId}/season`)
       .then((res) => res.json())
       .then((res) => {
-        setSeasons(res);
+        setSeasons(res.sort((a: Season, b: Season) => a.number - b.number));
         setThumbnailUrl(`/api/serie/${serieId}/thumbnail`);
       });
   }, [serieId]);
@@ -159,6 +163,56 @@ export default function Page() {
   const toggleSeasonExpand = (seasonNumber: number) => {
     setExpandedSeason(expandedSeason === seasonNumber ? null : seasonNumber);
   };
+
+  const handleEditSeasonNumber = (seasonId: number) => {
+    if (editingSeasonId === seasonId) {
+      // Save the edited season number
+      if (editedSeasonNumber !== null) {
+        fetch(
+          `/api/serie/${serieId}/season/${seasonId}?number=${editedSeasonNumber}`,
+          {
+            method: "PUT",
+          }
+        )
+          .then(async (res) => {
+            if (!res.ok) {
+              throw new Error(await res.text());
+            } else {
+              setSeasons(
+                seasons
+                  .map((season) =>
+                    season.id === seasonId
+                      ? { ...season, number: editedSeasonNumber }
+                      : season
+                  )
+                  .sort((a, b) => a.number - b.number)
+              );
+              setEditingSeasonId(null);
+              setEditedSeasonNumber(null);
+              toast({
+                title: "Succès",
+                description: "Numéro de saison mis à jour avec succès",
+              });
+            }
+          })
+          .catch((error) => {
+            toast({
+              title: "Erreur",
+              description: error.message,
+              variant: "destructive",
+            });
+          });
+      }
+    } else {
+      // Start editing
+      const season = seasons.find((s) => s.id === seasonId);
+      if (season) {
+        setEditingSeasonId(seasonId);
+        setEditedSeasonNumber(season.number);
+      }
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto mt-4 bg-background rounded-lg shadow-md p-6">
       <h2 className="text-2xl font-bold mb-6">Modifier la série</h2>
@@ -239,7 +293,20 @@ export default function Page() {
                         className="flex items-center text-lg font-semibold hover:text-primary transition-colors"
                         aria-expanded={expandedSeason === season.number}
                       >
-                        Season {season.number}
+                        {editingSeasonId === season.id ? (
+                          <Input
+                            type="number"
+                            value={editedSeasonNumber || ""}
+                            onChange={(e) =>
+                              setEditedSeasonNumber(
+                                parseInt(e.target.value, 10)
+                              )
+                            }
+                            className="w-20 mr-2"
+                          />
+                        ) : (
+                          <span>Saison {season.number}</span>
+                        )}
                         {expandedSeason === season.number ? (
                           <ChevronUp className="ml-2 h-4 w-4" />
                         ) : (
@@ -248,6 +315,17 @@ export default function Page() {
                       </button>
                     </div>
                     <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEditSeasonNumber(season.id)}
+                      >
+                        {editingSeasonId === season.id ? (
+                          <Save className="h-4 w-4" />
+                        ) : (
+                          <Edit2 className="h-4 w-4" />
+                        )}
+                      </Button>
                       <Button
                         variant="outline"
                         size="sm"
