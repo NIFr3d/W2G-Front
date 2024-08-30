@@ -13,4 +13,5 @@ export type Video = {
   id: number;
   episode: number;
   url: string;
+  season: Season;
 };

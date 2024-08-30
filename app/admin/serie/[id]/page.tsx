@@ -19,6 +19,14 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { ChevronUp, ChevronDown, Edit2, Save } from "lucide-react";
+import {
+  DialogHeader,
+  DialogFooter,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 export default function Page() {
   const { toast } = useToast();
@@ -35,6 +43,13 @@ export default function Page() {
   const [editedSeasonNumber, setEditedSeasonNumber] = useState<number | null>(
     null
   );
+  const [isAddVideoDialogOpen, setIsAddVideoDialogOpen] = useState(false);
+  const [currentSeasonNumber, setCurrentSeasonNumber] = useState<number | null>(
+    null
+  );
+  const [episodeStart, setEpisodeStart] = useState<number>(1);
+  const [episodeEnd, setEpisodeEnd] = useState<number | null>(null);
+  const [episodeFiles, setEpisodeFiles] = useState<FileList | null>(null);
 
   useEffect(() => {
     fetch(`/api/serie/${serieId}`)
@@ -45,6 +60,18 @@ export default function Page() {
       .then((res) => {
         setSeasons(res.sort((a: Season, b: Season) => a.number - b.number));
         setThumbnailUrl(`/api/serie/${serieId}/thumbnail`);
+      });
+    fetch(`/api/serie/${serieId}/video`)
+      .then((res) => res.json())
+      .then((res) => {
+        const videosBySeason = res.reduce((acc: any, video: Video) => {
+          if (!acc[video.season.number]) {
+            acc[video.season.number] = [];
+          }
+          acc[video.season.number].push(video);
+          return acc;
+        }, {});
+        setVideos(videosBySeason);
       });
   }, [serieId]);
 
@@ -81,7 +108,6 @@ export default function Page() {
   const handleAddSeason = async () => {
     if (!serie) return;
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
     fetch(`/api/serie/${serieId}/season`, {
       method: "POST",
     })
@@ -158,8 +184,61 @@ export default function Page() {
       });
   };
 
-  const handleAddvideo = (seasonNumber: Number) => {};
-  const handleRemovevideo = (seasonNumber: Number, videoNumber: Number) => {};
+  const handleAddvideo = (seasonNumber: number) => {
+    setCurrentSeasonNumber(seasonNumber);
+    const lastEpisodeNumber =
+      videos[seasonNumber]?.length > 0
+        ? Math.max(...videos[seasonNumber].map((v) => v.number))
+        : 0;
+    setEpisodeStart(lastEpisodeNumber + 1);
+    setEpisodeEnd(null);
+    setEpisodeFiles(null);
+    setIsAddVideoDialogOpen(true);
+  };
+
+  const handleEpisodeFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setEpisodeFiles(e.target.files);
+      if (e.target.files.length > 1) {
+        setEpisodeEnd(episodeStart + e.target.files.length - 1);
+      } else {
+        setEpisodeEnd(null);
+      }
+    } else {
+      setEpisodeFiles(null);
+      setEpisodeEnd(null);
+    }
+  };
+
+  const handleSubmitEpisodes = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentSeasonNumber || !episodeFiles) return;
+
+    setIsLoading(true);
+
+    const newVideos = Array.from(episodeFiles).map((file, index) => ({
+      id:
+        Math.max(0, ...videos[currentSeasonNumber].map((v) => v.id)) +
+        index +
+        1,
+      title: file.name,
+      number: episodeStart + index,
+    }));
+
+    setVideos({
+      ...videos,
+      [currentSeasonNumber]: [...videos[currentSeasonNumber], ...newVideos],
+    });
+
+    setIsLoading(false);
+    setIsAddVideoDialogOpen(false);
+    toast({
+      title: "Success",
+      description: `${newVideos.length} episode(s) added to Season ${currentSeasonNumber}`,
+    });
+  };
+
+  const handleRemoveVideo = (seasonNumber: Number, videoNumber: Number) => {};
   const toggleSeasonExpand = (seasonNumber: number) => {
     setExpandedSeason(expandedSeason === seasonNumber ? null : seasonNumber);
   };
@@ -364,7 +443,7 @@ export default function Page() {
                     <div className="mt-2 space-y-2">
                       {videos[season.number]?.map(
                         (
-                          video //TODO : Add actual video data implementation
+                          video: Video //TODO : Add actual video data implementation
                         ) => (
                           <div
                             key={video.id}
@@ -401,6 +480,75 @@ export default function Page() {
           </div>
         </div>
       )}
+      <Dialog
+        open={isAddVideoDialogOpen}
+        onOpenChange={setIsAddVideoDialogOpen}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Ajout d'épisode(s)</DialogTitle>
+            <DialogDescription>
+              Ajouter un ou plusieurs épisodes pour la saison{" "}
+              {currentSeasonNumber}
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleSubmitEpisodes}>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="episodeStart" className="text-right">
+                  {episodeFiles && episodeFiles.length > 1
+                    ? "Début"
+                    : "Numéro de l'épisode"}
+                </Label>
+                <Input
+                  id="episodeStart"
+                  type="number"
+                  value={episodeStart}
+                  onChange={(e) => {
+                    const newStart = parseInt(e.target.value, 10);
+                    setEpisodeStart(newStart);
+                    if (episodeFiles && episodeFiles.length > 1) {
+                      setEpisodeEnd(newStart + episodeFiles.length - 1);
+                    }
+                  }}
+                  className="col-span-3"
+                />
+              </div>
+              {episodeFiles && episodeFiles.length > 1 && (
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="episodeEnd" className="text-right">
+                    Fin
+                  </Label>
+                  <Input
+                    id="episodeEnd"
+                    type="number"
+                    value={episodeEnd || ""}
+                    readOnly
+                    className="col-span-3"
+                  />
+                </div>
+              )}
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="episodeFiles" className="text-right">
+                  Fichier(s)
+                </Label>
+                <Input
+                  id="episodeFiles"
+                  type="file"
+                  onChange={handleEpisodeFileChange}
+                  multiple
+                  className="col-span-3"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={!episodeFiles || isLoading}>
+                {isLoading ? "Envoie..." : "Envoyer"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
