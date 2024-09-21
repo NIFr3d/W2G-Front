@@ -238,14 +238,43 @@ export default function Page() {
     setIsLoading(false);
     setIsAddVideoDialogOpen(false);
     toast({
-      title: 'Success',
+      title: 'Succès',
       description: `${
         episodeEnd ? episodeEnd - episodeStart : 1
-      } episode(s) added to Season ${currentSeasonNumber}`,
+      } episode(s) ajouté(s) à la saison ${currentSeasonNumber}`,
     });
   };
 
-  const handleRemoveVideo = (seasonNumber: Number, videoNumber: Number) => {};
+  const handleRemoveVideo = (seasonId: Number, videoId: Number) => {
+    setIsLoading(true);
+    fetch(`/api/serie/${serieId}/season/${seasonId}/video/${videoId}`, {
+      method: 'DELETE',
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          throw new Error(await res.text());
+        }
+      })
+      .then(() => {
+        fetch(`/api/serie/${serieId}/video`)
+          .then((res) => res.json())
+          .then((res) => {
+            setVideos(res);
+          });
+      })
+      .catch((error) => {
+        toast({
+          title: 'Erreur',
+          description: error.message,
+          variant: 'destructive',
+        });
+      });
+    setIsLoading(false);
+    toast({
+      title: 'Succès',
+      description: `Episode supprimé avec succès`,
+    });
+  };
 
   const toggleSeasonExpand = (seasonNumber: number) => {
     setExpandedSeason(expandedSeason === seasonNumber ? null : seasonNumber);
@@ -404,7 +433,7 @@ export default function Page() {
                         size="sm"
                         onClick={() => handleAddvideo(season.number)}
                       >
-                        Add video
+                        Ajout d'épisode(s)
                       </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
@@ -435,7 +464,7 @@ export default function Page() {
                   {expandedSeason === season.number && (
                     <div className="mt-2 space-y-2">
                       {videos
-                        .filter((v) => (v.season.number = season.number))
+                        .filter((v) => v.season.number == season.number)
                         .map((video: Video) => (
                           <div
                             key={video.id}
@@ -445,14 +474,14 @@ export default function Page() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => handleRemoveVideo(season.number, video.id)}
+                              onClick={() => handleRemoveVideo(season.id, video.id)}
                             >
-                              Remove
+                              Supprimer
                             </Button>
                           </div>
                         ))}
-                      {videos.filter((v) => (v.season.number = season.number)).length === 0 && (
-                        <p className="text-muted-foreground">No videos in this season.</p>
+                      {videos.filter((v) => v.season.number == season.number).length === 0 && (
+                        <p className="text-muted-foreground">Aucun épisode pour cette saison.</p>
                       )}
                     </div>
                   )}
