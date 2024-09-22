@@ -1,15 +1,21 @@
-import Image from "next/image";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardHeader,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
-import Header from "@/components/header";
+import Image from 'next/image';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
+import { useEffect, useState } from 'react';
+import { WatchHistory } from '@/lib/types';
 
 export default function Home() {
+  const [resumeWatchings, setResumeWatchings] = useState<WatchHistory[]>([]);
+
+  useEffect(() => {
+    fetch('/api/history')
+      .then((response) => response.json())
+      .then((data) => setResumeWatchings(data));
+  }, []);
+
   return (
     <main className="flex-1">
       <section className="w-full py-12 md:py-24 lg:py-32">
@@ -22,90 +28,42 @@ export default function Home() {
             </div>
           </div>
           <div className="mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            <Card className="bg-muted rounded-lg overflow-hidden">
-              <CardHeader>
-                <Image
-                  src="/placeholder.svg"
-                  alt="Affiche de film 1"
-                  width={300}
-                  height={450}
-                  className="object-cover"
-                  style={{ aspectRatio: "300/450", objectFit: "cover" }}
-                />
-              </CardHeader>
-              <CardContent className="p-4">
-                <div className="grid gap-2">
-                  <h3 className="text-lg font-bold">La Cavale de Shawshank</h3>
-                  <p className="text-muted-foreground">Saison 1, Episode 5</p>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-end">
-                <Button variant="link">Reprendre</Button>
-              </CardFooter>
-            </Card>
-            <Card className="bg-muted rounded-lg overflow-hidden">
-              <CardHeader>
-                <Image
-                  src="/placeholder.svg"
-                  alt="Affiche de film 2"
-                  width={300}
-                  height={450}
-                  className="object-cover"
-                  style={{ aspectRatio: "300/450", objectFit: "cover" }}
-                />
-              </CardHeader>
-              <CardContent className="p-4">
-                <div className="grid gap-2">
-                  <h3 className="text-lg font-bold">Inception</h3>
-                  <p className="text-muted-foreground">Saison 2, Episode 8</p>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-end">
-                <Button variant="link">Reprendre</Button>
-              </CardFooter>
-            </Card>
-            <Card className="bg-muted rounded-lg overflow-hidden">
-              <CardHeader>
-                <Image
-                  src="/placeholder.svg"
-                  alt="Affiche de film 3"
-                  width={300}
-                  height={450}
-                  className="object-cover"
-                  style={{ aspectRatio: "300/450", objectFit: "cover" }}
-                />
-              </CardHeader>
-              <CardContent className="p-4">
-                <div className="grid gap-2">
-                  <h3 className="text-lg font-bold">The Dark Knight</h3>
-                  <p className="text-muted-foreground">Saison 1, Episode 12</p>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-end">
-                <Button variant="link">Reprendre</Button>
-              </CardFooter>
-            </Card>
-            <Card className="bg-muted rounded-lg overflow-hidden">
-              <CardHeader>
-                <Image
-                  src="/placeholder.svg"
-                  alt="Affiche de film 4"
-                  width={300}
-                  height={450}
-                  className="object-cover"
-                  style={{ aspectRatio: "300/450", objectFit: "cover" }}
-                />
-              </CardHeader>
-              <CardContent className="p-4">
-                <div className="grid gap-2">
-                  <h3 className="text-lg font-bold">Le Seigneur des Anneaux</h3>
-                  <p className="text-muted-foreground">Saison 3, Episode 4</p>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-end">
-                <Button variant="link">Reprendre</Button>
-              </CardFooter>
-            </Card>
+            {resumeWatchings.map((resumeWatching) => (
+              <Card key={resumeWatching.id} className="bg-muted rounded-lg overflow-hidden">
+                <CardHeader>
+                  <Image
+                    src="/placeholder.svg"
+                    alt="Affiche de film 1"
+                    width={300}
+                    height={450}
+                    className="object-cover"
+                    style={{ aspectRatio: '300/450', objectFit: 'cover' }}
+                  />
+                </CardHeader>
+                <CardContent className="p-4">
+                  <div className="grid gap-2">
+                    <h3 className="text-lg font-bold">{resumeWatching.video.season.serie.title}</h3>
+                    <p className="text-muted-foreground">
+                      Saison {resumeWatching.video.season.number}, Episode{' '}
+                      {resumeWatching.video.episode}
+                    </p>
+                  </div>
+                </CardContent>
+                <CardFooter className="flex justify-end">
+                  <Button variant="link">Reprendre</Button>
+                </CardFooter>
+              </Card>
+            ))}
+
+            {resumeWatchings.length === 0 && (
+              <div className="col-span-full text-center">
+                <p className="text-lg text-muted-foreground">
+                  Vous n'avez pas de série en cours de lecture. <br />
+                  Utilisez la fonction de recherche (en haut de l'écran) pour trouver une série à
+                  regarder.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </section>

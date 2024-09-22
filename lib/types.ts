@@ -7,6 +7,7 @@ export type Serie = {
 export type Season = {
   id: number;
   number: number;
+  serie: Serie;
 };
 
 export type Video = {
@@ -14,4 +15,10 @@ export type Video = {
   episode: number;
   url: string;
   season: Season;
+};
+
+export type WatchHistory = {
+  id: number;
+  video: Video;
+  watchTime: number;
 };
