@@ -1,18 +1,13 @@
-"use client";
+'use client';
 
-import type { Serie } from "@/lib/types";
+import type { Serie } from '@/lib/types';
 
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardHeader,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Dialog,
   DialogTrigger,
@@ -22,7 +17,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogClose,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,48 +28,46 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { useToast } from "@/components/ui/use-toast";
-import Link from "next/link";
+} from '@/components/ui/alert-dialog';
+import { useToast } from '@/components/ui/use-toast';
+import Link from 'next/link';
 
 export default function Component() {
   const [series, setSeries] = useState<Serie[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [filteredSeries, setFilteredSeries] = useState<Serie[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
     setFilteredSeries(
-      series.filter((show) =>
-        show.title.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      series.filter((show) => show.title.toLowerCase().includes(searchTerm.toLowerCase())),
     );
   }, [searchTerm, series]);
 
   const handleSaveNewSeries = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const response = await fetch("/api/serie", {
-      method: "POST",
+    const response = await fetch('/api/serie', {
+      method: 'POST',
       body: formData,
     });
 
     if (response.ok) {
       // Refresh the series list
-      fetch("/api/serie")
+      fetch('/api/serie')
         .then((res) => res.json())
         .then((data) => setSeries(data));
     } else {
       toast({
         title: `Erreur ${response.status}`,
         description: response.text(),
-        variant: "destructive",
+        variant: 'destructive',
       });
     }
   };
 
   useEffect(() => {
-    fetch("/api/serie")
+    fetch('/api/serie')
       .then((res) => res.json())
       .then((data) => setSeries(data));
   }, []);
@@ -82,7 +75,7 @@ export default function Component() {
   const handleEditSeries = (id: number) => {};
   const handleDeleteSeries = (id: number) => {
     fetch(`/api/serie/${id}`, {
-      method: "DELETE",
+      method: 'DELETE',
     }).then(() => {
       setSeries(series.filter((serie) => serie.id !== id));
     });
@@ -121,12 +114,7 @@ export default function Component() {
                     </div>
                     <div className="mt-2">
                       <Label htmlFor="thumbnail">Miniature</Label>
-                      <Input
-                        id="thumbnail"
-                        name="thumbnail"
-                        type="file"
-                        className="mt-2"
-                      />
+                      <Input id="thumbnail" name="thumbnail" type="file" className="mt-2" />
                     </div>
                   </form>
                 </DialogDescription>
@@ -152,16 +140,16 @@ export default function Component() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredSeries.map((serie) => (
-              <Card key={serie.id}>
+              <Card key={serie.id} className="max-w-72">
                 <CardHeader>
-                  <div className="rounded-lg overflow-hidden aspect-video">
+                  <div className="rounded-lg overflow-hidden">
                     <img
                       src={`/api/serie/${serie.id}/thumbnail`}
                       alt={`${serie.title} Thumbnail`}
-                      width={800}
+                      width={300}
                       height={450}
                       className="w-full h-full object-cover"
-                      style={{ aspectRatio: "800/450", objectFit: "cover" }}
+                      style={{ aspectRatio: '300/450', objectFit: 'cover' }}
                     />
                   </div>
                 </CardHeader>
@@ -171,10 +159,7 @@ export default function Component() {
                 </CardContent>
                 <CardFooter className="flex items-center justify-between">
                   <Link href={`/admin/serie/${serie.id}`}>
-                    <Button
-                      variant="outline"
-                      onClick={() => handleEditSeries(serie.id)}
-                    >
+                    <Button variant="outline" onClick={() => handleEditSeries(serie.id)}>
                       Modifier
                     </Button>
                   </Link>
