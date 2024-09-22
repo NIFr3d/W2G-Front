@@ -32,7 +32,7 @@ export default function Home() {
               <Card key={resumeWatching.id} className="bg-muted rounded-lg overflow-hidden">
                 <CardHeader>
                   <Image
-                    src="/placeholder.svg"
+                    src={`/api/serie/${resumeWatching.video.season.serie.id}/thumbnail`}
                     alt="Affiche de film 1"
                     width={300}
                     height={450}
