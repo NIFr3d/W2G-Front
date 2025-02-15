@@ -35,7 +35,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/components/ui/use-toast";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useSeries, useAddSeries, useDeleteSeries } from "@/lib/queries.hooks";
@@ -73,38 +73,32 @@ export default function Component() {
 
   const methods = useForm({
     resolver: zodResolver(serieSchema),
-  });
-  const { register, handleSubmit } = methods;
-
-  const handleSaveNewSeries = useCallback(
-    async (data: {
-      title: string;
-      description: string;
-      thumbnail: FileList;
-    }) => {
-      console.log("data", data);
-      try {
-        const formData = new FormData();
-        formData.append("title", data.title);
-        formData.append("description", data.description);
-        formData.append("thumbnail", data.thumbnail[0]);
-        await addSeriesMutation.mutateAsync(formData);
-      } catch (error: unknown) {
-        if (error instanceof Error) {
-          toast({
-            title: "Erreur",
-            description: error.message,
-            variant: "destructive",
-          });
-        }
-      }
+    defaultValues: {
+      title: "",
+      description: "",
+      thumbnail: [],
     },
-    []
-  );
+  });
+  const { reset, register, handleSubmit } = methods;
 
-  const handleEditSeries = useCallback((id: number) => {
-    console.log("Edit series", id);
-    //TODO: Implement edit series
+  const handleSaveNewSeries = useCallback(async (data: FieldValues) => {
+    try {
+      const formData = new FormData();
+      formData.append("title", data.title);
+      formData.append("description", data.description);
+      formData.append("thumbnail", data.thumbnail[0]);
+      await addSeriesMutation.mutateAsync(formData);
+      setIsDialogOpen(false);
+      reset();
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast({
+          title: "Erreur",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
+    }
   }, []);
 
   const handleDeleteSeries = useCallback(async (id: number) => {
@@ -149,47 +143,49 @@ export default function Component() {
                       <Input
                         id="title"
                         placeholder="Ajouter un titre"
-                        className="mt-2"
+                        className="my-2"
                         {...register("title", { required: true })}
                       />
                       {methods.formState.errors.title && (
-                        <p className="text-red-500" role="alert">
+                        <span className="text-red-500" role="alert">
                           {typeof methods.formState.errors.title?.message ===
                             "string" && methods.formState.errors.title.message}
-                        </p>
+                        </span>
                       )}
                     </span>
+                    <br />
                     <span className="mt-2">
                       <Label htmlFor="description">Description</Label>
                       <Textarea
                         id="description"
                         placeholder="Ajouter la description de la série"
-                        className="mt-2"
+                        className="my-2"
                         {...register("description", { required: true })}
                       />
                       {methods.formState.errors.description && (
-                        <p className="text-red-500" role="alert">
+                        <span className="text-red-500" role="alert">
                           {typeof methods.formState.errors.description
                             ?.message === "string" &&
                             methods.formState.errors.description.message}
-                        </p>
+                        </span>
                       )}
                     </span>
+                    <br />
                     <span className="mt-2">
                       <Label htmlFor="thumbnail">Miniature</Label>
                       <Input
                         id="thumbnail"
                         type="file"
-                        className="mt-2"
+                        className="my-2"
                         multiple={false}
                         {...register("thumbnail", { required: true })}
                       />
                       {methods.formState.errors.thumbnail && (
-                        <p className="text-red-500" role="alert">
+                        <span className="text-red-500" role="alert">
                           {typeof methods.formState.errors.thumbnail
                             ?.message === "string" &&
                             methods.formState.errors.thumbnail.message}
-                        </p>
+                        </span>
                       )}
                     </span>
                   </DialogDescription>
@@ -198,6 +194,7 @@ export default function Component() {
                   <DialogClose
                     type="button"
                     onClick={() => setIsDialogOpen(false)}
+                    className="border rounded-lg mr-2 shadow-mg p-2 hover:bg-secondary/80"
                   >
                     Annuler
                   </DialogClose>
@@ -239,12 +236,7 @@ export default function Component() {
                 </CardContent>
                 <CardFooter className="flex items-center justify-between">
                   <Link href={`/admin/serie/${serie.id}`}>
-                    <Button
-                      variant="outline"
-                      onClick={() => handleEditSeries(serie.id)}
-                    >
-                      Modifier
-                    </Button>
+                    <Button variant="outline">Modifier</Button>
                   </Link>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
