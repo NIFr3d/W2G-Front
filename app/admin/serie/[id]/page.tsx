@@ -1,12 +1,12 @@
-'use client';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { Season, Serie, Video } from '@/lib/types';
-import { useToast } from '@/components/ui/use-toast';
+"use client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { Season, Serie, Video } from "@/lib/types";
+import { useToast } from "@/components/ui/use-toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,8 +17,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { ChevronUp, ChevronDown, Edit2, Save } from 'lucide-react';
+} from "@/components/ui/alert-dialog";
+import { ChevronUp, ChevronDown, Edit2, Save } from "lucide-react";
 import {
   DialogHeader,
   DialogFooter,
@@ -26,7 +26,8 @@ import {
   DialogContent,
   DialogTitle,
   DialogDescription,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
 
 export default function Page() {
   const { toast } = useToast();
@@ -35,14 +36,18 @@ export default function Page() {
   const serieId = params.id;
   const [isLoading, setIsLoading] = useState(false);
   const [serie, setSerie] = useState<Serie | null>(null);
-  const [thumbnailUrl, setThumbnailUrl] = useState<string>('');
+  const [thumbnailUrl, setThumbnailUrl] = useState<string>("");
   const [seasons, setSeasons] = useState<Season[]>([]);
   const [videos, setVideos] = useState<Video[]>([]);
   const [expandedSeason, setExpandedSeason] = useState<number | null>(null);
   const [editingSeasonId, setEditingSeasonId] = useState<number | null>(null);
-  const [editedSeasonNumber, setEditedSeasonNumber] = useState<number | null>(null);
+  const [editedSeasonNumber, setEditedSeasonNumber] = useState<number | null>(
+    null
+  );
   const [isAddVideoDialogOpen, setIsAddVideoDialogOpen] = useState(false);
-  const [currentSeasonNumber, setCurrentSeasonNumber] = useState<number | null>(null);
+  const [currentSeasonNumber, setCurrentSeasonNumber] = useState<number | null>(
+    null
+  );
   const [episodeStart, setEpisodeStart] = useState<number>(1);
   const [episodeEnd, setEpisodeEnd] = useState<number | null>(null);
   const [episodeFiles, setEpisodeFiles] = useState<FileList | null>(null);
@@ -68,9 +73,9 @@ export default function Page() {
     if (!serie) return;
     setIsLoading(true);
     fetch(`/api/serie/${serieId}`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(serie),
     })
@@ -79,17 +84,17 @@ export default function Page() {
           throw new Error(await res.text());
         }
         toast({
-          title: 'Série mise à jour',
-          description: 'La série a été mise à jour avec succès',
+          title: "Série mise à jour",
+          description: "La série a été mise à jour avec succès",
         });
         setIsLoading(false);
         setSerie(await res.json());
       })
       .catch((error) => {
         toast({
-          title: 'Erreur',
+          title: "Erreur",
           description: error.message,
-          variant: 'destructive',
+          variant: "destructive",
         });
         setIsLoading(false);
       });
@@ -98,7 +103,7 @@ export default function Page() {
     if (!serie) return;
     setIsLoading(true);
     fetch(`/api/serie/${serieId}/season`, {
-      method: 'POST',
+      method: "POST",
     })
       .then(async (res) => {
         if (!res.ok) {
@@ -112,16 +117,16 @@ export default function Page() {
       })
       .catch((error) => {
         toast({
-          title: 'Erreur',
+          title: "Erreur",
           description: error.message,
-          variant: 'destructive',
+          variant: "destructive",
         });
       });
   };
   const handleRemoveSeason = (seasonId: Number) => {
     setIsLoading(true);
     fetch(`/api/serie/${serieId}/season/${seasonId}`, {
-      method: 'DELETE',
+      method: "DELETE",
     })
       .then(async (res) => {
         if (!res.ok) {
@@ -135,9 +140,9 @@ export default function Page() {
       })
       .catch((error) => {
         toast({
-          title: 'Erreur',
+          title: "Erreur",
           description: error.message,
-          variant: 'destructive',
+          variant: "destructive",
         });
         setIsLoading(false);
       });
@@ -148,7 +153,7 @@ export default function Page() {
     const formData = new FormData(e.currentTarget);
     setIsLoading(true);
     fetch(`/api/serie/${serieId}/thumbnail`, {
-      method: 'POST',
+      method: "POST",
       body: formData,
     })
       .then(async (res) => {
@@ -156,8 +161,8 @@ export default function Page() {
           throw new Error(await res.text());
         } else {
           toast({
-            title: 'Miniature mise à jour',
-            description: 'La miniature a été mise à jour avec succès',
+            title: "Miniature mise à jour",
+            description: "La miniature a été mise à jour avec succès",
           });
           setThumbnailUrl(`/api/serie/${serieId}/thumbnail?${Date.now()}`);
         }
@@ -165,9 +170,9 @@ export default function Page() {
       })
       .catch((error) => {
         toast({
-          title: 'Erreur',
+          title: "Erreur",
           description: error.message,
-          variant: 'destructive',
+          variant: "destructive",
         });
         setIsLoading(false);
       });
@@ -175,9 +180,13 @@ export default function Page() {
 
   const handleAddvideo = (seasonNumber: number) => {
     setCurrentSeasonNumber(seasonNumber);
-    const videosOfSeason = videos.filter((v) => v.season.number === seasonNumber);
+    const videosOfSeason = videos.filter(
+      (v) => v.season.number === seasonNumber
+    );
     const lastEpisodeNumber =
-      videosOfSeason.length > 0 ? Math.max(...videosOfSeason.map((v) => v.episode)) : 0;
+      videosOfSeason.length > 0
+        ? Math.max(...videosOfSeason.map((v) => v.episode))
+        : 0;
     setEpisodeStart(lastEpisodeNumber + 1);
     setEpisodeEnd(null);
     setEpisodeFiles(null);
@@ -203,16 +212,18 @@ export default function Page() {
     if (!currentSeasonNumber || !episodeFiles) return;
 
     setIsLoading(true);
-    const videosOfSeason = videos.filter((v) => v.season.number === currentSeasonNumber);
+    const videosOfSeason = videos.filter(
+      (v) => v.season.number === currentSeasonNumber
+    );
 
     const formData = new FormData();
-    formData.append('episodeStart', episodeStart.toString());
+    formData.append("episodeStart", episodeStart.toString());
     Array.from(episodeFiles).forEach((file, index) => {
       formData.append(`files[${index}]`, file);
     });
 
     fetch(`/api/serie/${serieId}/season/${currentSeasonNumber}/video`, {
-      method: 'POST',
+      method: "POST",
       body: formData,
     })
       .then(async (res) => {
@@ -229,16 +240,16 @@ export default function Page() {
       })
       .catch((error) => {
         toast({
-          title: 'Erreur',
+          title: "Erreur",
           description: error.message,
-          variant: 'destructive',
+          variant: "destructive",
         });
       });
 
     setIsLoading(false);
     setIsAddVideoDialogOpen(false);
     toast({
-      title: 'Succès',
+      title: "Succès",
       description: `${
         episodeEnd ? episodeEnd - episodeStart : 1
       } episode(s) ajouté(s) à la saison ${currentSeasonNumber}`,
@@ -248,7 +259,7 @@ export default function Page() {
   const handleRemoveVideo = (seasonId: Number, videoId: Number) => {
     setIsLoading(true);
     fetch(`/api/serie/${serieId}/season/${seasonId}/video/${videoId}`, {
-      method: 'DELETE',
+      method: "DELETE",
     })
       .then(async (res) => {
         if (!res.ok) {
@@ -264,14 +275,14 @@ export default function Page() {
       })
       .catch((error) => {
         toast({
-          title: 'Erreur',
+          title: "Erreur",
           description: error.message,
-          variant: 'destructive',
+          variant: "destructive",
         });
       });
     setIsLoading(false);
     toast({
-      title: 'Succès',
+      title: "Succès",
       description: `Episode supprimé avec succès`,
     });
   };
@@ -284,9 +295,12 @@ export default function Page() {
     if (editingSeasonId === seasonId) {
       // Save the edited season number
       if (editedSeasonNumber !== null) {
-        fetch(`/api/serie/${serieId}/season/${seasonId}?number=${editedSeasonNumber}`, {
-          method: 'PUT',
-        })
+        fetch(
+          `/api/serie/${serieId}/season/${seasonId}?number=${editedSeasonNumber}`,
+          {
+            method: "PUT",
+          }
+        )
           .then(async (res) => {
             if (!res.ok) {
               throw new Error(await res.text());
@@ -294,23 +308,25 @@ export default function Page() {
               setSeasons(
                 seasons
                   .map((season) =>
-                    season.id === seasonId ? { ...season, number: editedSeasonNumber } : season,
+                    season.id === seasonId
+                      ? { ...season, number: editedSeasonNumber }
+                      : season
                   )
-                  .sort((a, b) => a.number - b.number),
+                  .sort((a, b) => a.number - b.number)
               );
               setEditingSeasonId(null);
               setEditedSeasonNumber(null);
               toast({
-                title: 'Succès',
-                description: 'Numéro de saison mis à jour avec succès',
+                title: "Succès",
+                description: "Numéro de saison mis à jour avec succès",
               });
             }
           })
           .catch((error) => {
             toast({
-              title: 'Erreur',
+              title: "Erreur",
               description: error.message,
-              variant: 'destructive',
+              variant: "destructive",
             });
           });
       }
@@ -362,16 +378,22 @@ export default function Page() {
               Annuler
             </Button>
             <Button onClick={handleUpdateSerie} disabled={isLoading}>
-              {isLoading ? 'En cours...' : 'Enregistrer'}
+              {isLoading ? "En cours..." : "Enregistrer"}
             </Button>
           </div>
+          <Separator />
           <div className="flex flex-row w-full">
             <form onSubmit={handleSaveThumbnail} className="w-full">
               <Label htmlFor="thumbnail">Miniature</Label>
               <div className="flex items-center gap-2">
-                <Input id="thumbnail" name="thumbnail" type="file" accept="image/*" />
+                <Input
+                  id="thumbnail"
+                  name="thumbnail"
+                  type="file"
+                  accept="image/*"
+                />
                 <Button type="submit" disabled={isLoading}>
-                  {isLoading ? 'Envoie...' : 'Envoyer'}
+                  {isLoading ? "Envoie..." : "Envoyer"}
                 </Button>
               </div>
             </form>
@@ -383,7 +405,7 @@ export default function Page() {
               />
             )}
           </div>
-
+          <Separator />
           <div className="grid gap-4">
             <h3 className="text-xl font-bold">Saisons</h3>
             <div className="grid gap-2">
@@ -402,8 +424,12 @@ export default function Page() {
                         {editingSeasonId === season.id ? (
                           <Input
                             type="number"
-                            value={editedSeasonNumber || ''}
-                            onChange={(e) => setEditedSeasonNumber(parseInt(e.target.value, 10))}
+                            value={editedSeasonNumber || ""}
+                            onChange={(e) =>
+                              setEditedSeasonNumber(
+                                parseInt(e.target.value, 10)
+                              )
+                            }
                             className="w-20 mr-2"
                           />
                         ) : (
@@ -443,7 +469,8 @@ export default function Page() {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Etes-vous sûr ?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              Tous les fichiers liés à la saison seront supprimés.
+                              Tous les fichiers liés à la saison seront
+                              supprimés.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
@@ -474,14 +501,19 @@ export default function Page() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => handleRemoveVideo(season.id, video.id)}
+                              onClick={() =>
+                                handleRemoveVideo(season.id, video.id)
+                              }
                             >
                               Supprimer
                             </Button>
                           </div>
                         ))}
-                      {videos.filter((v) => v.season.number == season.number).length === 0 && (
-                        <p className="text-muted-foreground">Aucun épisode pour cette saison.</p>
+                      {videos.filter((v) => v.season.number == season.number)
+                        .length === 0 && (
+                        <p className="text-muted-foreground">
+                          Aucun épisode pour cette saison.
+                        </p>
                       )}
                     </div>
                   )}
@@ -494,19 +526,25 @@ export default function Page() {
           </div>
         </div>
       )}
-      <Dialog open={isAddVideoDialogOpen} onOpenChange={setIsAddVideoDialogOpen}>
+      <Dialog
+        open={isAddVideoDialogOpen}
+        onOpenChange={setIsAddVideoDialogOpen}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Ajout d'épisode(s)</DialogTitle>
             <DialogDescription>
-              Ajouter un ou plusieurs épisodes pour la saison {currentSeasonNumber}
+              Ajouter un ou plusieurs épisodes pour la saison{" "}
+              {currentSeasonNumber}
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmitEpisodes}>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="episodeStart" className="text-right">
-                  {episodeFiles && episodeFiles.length > 1 ? 'Début' : "Numéro de l'épisode"}
+                  {episodeFiles && episodeFiles.length > 1
+                    ? "Début"
+                    : "Numéro de l'épisode"}
                 </Label>
                 <Input
                   id="episodeStart"
@@ -530,7 +568,7 @@ export default function Page() {
                   <Input
                     id="episodeEnd"
                     type="number"
-                    value={episodeEnd || ''}
+                    value={episodeEnd || ""}
                     readOnly
                     className="col-span-3"
                   />
@@ -551,7 +589,7 @@ export default function Page() {
             </div>
             <DialogFooter>
               <Button type="submit" disabled={!episodeFiles || isLoading}>
-                {isLoading ? 'Envoie...' : 'Envoyer'}
+                {isLoading ? "Envoie..." : "Envoyer"}
               </Button>
             </DialogFooter>
           </form>
