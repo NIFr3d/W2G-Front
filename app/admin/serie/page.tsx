@@ -1,13 +1,17 @@
-'use client';
+"use client";
 
-import type { Serie } from '@/lib/types';
-
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import type { Serie } from "@/lib/types";
+import { useCallback, useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogTrigger,
@@ -17,7 +21,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogClose,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,106 +32,182 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { useToast } from '@/components/ui/use-toast';
-import Link from 'next/link';
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/components/ui/use-toast";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useSeries, useAddSeries, useDeleteSeries } from "@/lib/queries.hooks";
+
+const serieSchema = z
+  .object({
+    title: z
+      .string()
+      .nonempty("Ce champs ne doit pas être vide")
+      .max(255, "Ce champs ne doit pas dépasser 255 caractères"),
+    description: z.string().nonempty("Ce champs ne doit pas être vide"),
+    thumbnail: z.instanceof(FileList),
+  })
+  .refine(
+    (data) => {
+      if (data.thumbnail.length === 0) return false;
+      return ["image/jpeg", "image/png"].includes(data.thumbnail[0].type);
+    },
+    {
+      message: "Le fichier doit être une image au format JPEG ou PNG",
+      path: ["thumbnail"],
+    }
+  );
 
 export default function Component() {
-  const [series, setSeries] = useState<Serie[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredSeries, setFilteredSeries] = useState<Serie[]>([]);
   const { toast } = useToast();
 
+  const { data: series } = useSeries();
+  const addSeriesMutation = useAddSeries();
+  const deleteSeriesMutation = useDeleteSeries();
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredSeries, setFilteredSeries] = useState<Serie[]>([]);
+
+  const methods = useForm({
+    resolver: zodResolver(serieSchema),
+  });
+  const { register, handleSubmit } = methods;
+
+  const handleSaveNewSeries = useCallback(
+    async (data: {
+      title: string;
+      description: string;
+      thumbnail: FileList;
+    }) => {
+      console.log("data", data);
+      try {
+        const formData = new FormData();
+        formData.append("title", data.title);
+        formData.append("description", data.description);
+        formData.append("thumbnail", data.thumbnail[0]);
+        await addSeriesMutation.mutateAsync(formData);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          toast({
+            title: "Erreur",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
+      }
+    },
+    []
+  );
+
+  const handleEditSeries = useCallback((id: number) => {
+    console.log("Edit series", id);
+    //TODO: Implement edit series
+  }, []);
+
+  const handleDeleteSeries = useCallback(async (id: number) => {
+    try {
+      await deleteSeriesMutation.mutateAsync(id);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast({
+          title: "Erreur",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
+    }
+  }, []);
+
   useEffect(() => {
+    if (typeof series === "undefined") return;
     setFilteredSeries(
-      series.filter((show) => show.title.toLowerCase().includes(searchTerm.toLowerCase())),
+      series.filter((show) =>
+        show.title.toLowerCase().includes(searchTerm.toLowerCase())
+      )
     );
   }, [searchTerm, series]);
 
-  const handleSaveNewSeries = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const response = await fetch('/api/serie', {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (response.ok) {
-      // Refresh the series list
-      fetch('/api/serie')
-        .then((res) => res.json())
-        .then((data) => setSeries(data));
-    } else {
-      toast({
-        title: `Erreur ${response.status}`,
-        description: response.text(),
-        variant: 'destructive',
-      });
-    }
-  };
-
-  useEffect(() => {
-    fetch('/api/serie')
-      .then((res) => res.json())
-      .then((data) => setSeries(data));
-  }, []);
-
-  const handleEditSeries = (id: number) => {};
-  const handleDeleteSeries = (id: number) => {
-    fetch(`/api/serie/${id}`, {
-      method: 'DELETE',
-    }).then(() => {
-      setSeries(series.filter((serie) => serie.id !== id));
-    });
-  };
   return (
     <div className="w-full min-h-screen bg-muted/40 py-8">
       <div className="max-w-6xl mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">Panneau d'administration</h1>
-          <Dialog>
-            <DialogTrigger className="h-10 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90">
-              Ajouter une série
-            </DialogTrigger>
-            <DialogContent className="min-w-[40rem]">
-              <DialogHeader>
-                <DialogTitle>Ajouter une série</DialogTitle>
-                <DialogDescription className="p-2">
-                  <form id="newSerieForm" onSubmit={handleSaveNewSeries}>
-                    <div className="mt-2">
+          <form id="newSerieForm" onSubmit={handleSubmit(handleSaveNewSeries)}>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger className="h-10 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90">
+                Ajouter une série
+              </DialogTrigger>
+              <DialogContent className="min-w-[40rem]">
+                <DialogHeader>
+                  <DialogTitle>Ajouter une série</DialogTitle>
+                  <DialogDescription className="p-2">
+                    <span className="mt-2">
                       <Label htmlFor="title">Titre</Label>
                       <Input
                         id="title"
-                        name="title"
                         placeholder="Ajouter un titre"
                         className="mt-2"
+                        {...register("title", { required: true })}
                       />
-                    </div>
-                    <div className="mt-2">
+                      {methods.formState.errors.title && (
+                        <p className="text-red-500" role="alert">
+                          {typeof methods.formState.errors.title?.message ===
+                            "string" && methods.formState.errors.title.message}
+                        </p>
+                      )}
+                    </span>
+                    <span className="mt-2">
                       <Label htmlFor="description">Description</Label>
                       <Textarea
                         id="description"
-                        name="description"
                         placeholder="Ajouter la description de la série"
                         className="mt-2"
+                        {...register("description", { required: true })}
                       />
-                    </div>
-                    <div className="mt-2">
+                      {methods.formState.errors.description && (
+                        <p className="text-red-500" role="alert">
+                          {typeof methods.formState.errors.description
+                            ?.message === "string" &&
+                            methods.formState.errors.description.message}
+                        </p>
+                      )}
+                    </span>
+                    <span className="mt-2">
                       <Label htmlFor="thumbnail">Miniature</Label>
-                      <Input id="thumbnail" name="thumbnail" type="file" className="mt-2" />
-                    </div>
-                  </form>
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
-                <DialogClose>
+                      <Input
+                        id="thumbnail"
+                        type="file"
+                        className="mt-2"
+                        multiple={false}
+                        {...register("thumbnail", { required: true })}
+                      />
+                      {methods.formState.errors.thumbnail && (
+                        <p className="text-red-500" role="alert">
+                          {typeof methods.formState.errors.thumbnail
+                            ?.message === "string" &&
+                            methods.formState.errors.thumbnail.message}
+                        </p>
+                      )}
+                    </span>
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <DialogClose
+                    type="button"
+                    onClick={() => setIsDialogOpen(false)}
+                  >
+                    Annuler
+                  </DialogClose>
                   <Button form="newSerieForm" type="submit">
                     Enregistrer
                   </Button>
-                </DialogClose>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </form>
         </div>
         <div className="bg-background rounded-lg shadow-md p-6">
           <div className="mb-6">
@@ -149,7 +229,7 @@ export default function Component() {
                       width={300}
                       height={450}
                       className="w-full h-full object-cover"
-                      style={{ aspectRatio: '300/450', objectFit: 'cover' }}
+                      style={{ aspectRatio: "300/450", objectFit: "cover" }}
                     />
                   </div>
                 </CardHeader>
@@ -159,7 +239,10 @@ export default function Component() {
                 </CardContent>
                 <CardFooter className="flex items-center justify-between">
                   <Link href={`/admin/serie/${serie.id}`}>
-                    <Button variant="outline" onClick={() => handleEditSeries(serie.id)}>
+                    <Button
+                      variant="outline"
+                      onClick={() => handleEditSeries(serie.id)}
+                    >
                       Modifier
                     </Button>
                   </Link>

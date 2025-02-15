@@ -5,6 +5,7 @@ import { CookiesProvider } from "next-client-cookies/server";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { Toaster } from "@/components/ui/toaster";
+import Providers from "@/components/providers";
 
 const fontHeading = Inter({
   subsets: ["latin"],
@@ -30,11 +31,13 @@ export default async function Layout({
       >
         <title>W2G</title>
         <CookiesProvider>
-          <div className="flex flex-col min-h-dvh">
-            <Header />
-            <div className="min-h-[calc(100vh-11rem)]">{children}</div>
-            <Footer />
-          </div>
+          <Providers>
+            <div className="flex flex-col min-h-dvh">
+              <Header />
+              <div className="min-h-[calc(100vh-11rem)]">{children}</div>
+              <Footer />
+            </div>
+          </Providers>
         </CookiesProvider>
         <Toaster />
       </body>

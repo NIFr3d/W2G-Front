@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const currentPath = usePathname();
-  console.log(currentPath);
   const pages = [
     {
       title: "Séries",
