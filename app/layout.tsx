@@ -2,10 +2,10 @@ import { Cookie, Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 import { CookiesProvider } from "next-client-cookies/server";
-import Header from "@/components/header";
-import Footer from "@/components/footer";
+import Header from "@/components/general/header";
+import Footer from "@/components/general/footer";
 import { Toaster } from "@/components/ui/toaster";
-import Providers from "@/components/providers";
+import Providers from "@/components/general/providers";
 
 const fontHeading = Inter({
   subsets: ["latin"],
