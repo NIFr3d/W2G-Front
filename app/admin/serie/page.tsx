@@ -38,7 +38,11 @@ import Link from "next/link";
 import { FieldValues, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useSeries, useAddSeries, useDeleteSeries } from "@/lib/queries.hooks";
+import {
+  useSeries,
+  useAddSeries,
+  useDeleteSeries,
+} from "@/lib/queries/admin.hooks";
 
 const serieSchema = z
   .object({

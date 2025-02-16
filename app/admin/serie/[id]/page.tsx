@@ -28,12 +28,23 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import {
+  useSerie,
+  useSeasons,
+  useVideos,
+  useUpdateSerie,
+  useAddSeason,
+  useRemoveSeason,
+  useSaveThumbnail,
+  useAddVideo,
+  useRemoveVideo,
+} from "@/lib/queries/admin.hooks";
 
 export default function Page() {
   const { toast } = useToast();
   const params = useParams();
   const router = useRouter();
-  const serieId = params.id;
+  const serieId = params.id as string;
   const [isLoading, setIsLoading] = useState(false);
   const [serie, setSerie] = useState<Serie | null>(null);
   const [thumbnailUrl, setThumbnailUrl] = useState<string>("");
@@ -52,130 +63,125 @@ export default function Page() {
   const [episodeEnd, setEpisodeEnd] = useState<number | null>(null);
   const [episodeFiles, setEpisodeFiles] = useState<FileList | null>(null);
 
+  const { data: serieData } = useSerie(serieId);
+  const { data: seasonsData } = useSeasons(serieId);
+  const { data: videosData } = useVideos(serieId);
+  const updateSerieMutation = useUpdateSerie();
+  const addSeasonMutation = useAddSeason();
+  const removeSeasonMutation = useRemoveSeason();
+  const saveThumbnailMutation = useSaveThumbnail();
+  const addVideoMutation = useAddVideo();
+  const removeVideoMutation = useRemoveVideo();
+
   useEffect(() => {
-    fetch(`/api/serie/${serieId}`)
-      .then((res) => res.json())
-      .then(setSerie);
-    fetch(`/api/serie/${serieId}/season`)
-      .then((res) => res.json())
-      .then((res) => {
-        setSeasons(res.sort((a: Season, b: Season) => a.number - b.number));
-        setThumbnailUrl(`/api/serie/${serieId}/thumbnail`);
-      });
-    fetch(`/api/serie/${serieId}/video`)
-      .then((res) => res.json())
-      .then((res) => {
-        setVideos(res);
-      });
-  }, [serieId]);
+    if (serieData) {
+      setSerie(serieData);
+      setThumbnailUrl(`/api/serie/${serieId}/thumbnail`);
+    }
+    if (seasonsData) {
+      setSeasons(seasonsData.sort((a, b) => a.number - b.number));
+    }
+    if (videosData) {
+      setVideos(videosData);
+    }
+  }, [serieData, seasonsData, videosData, serieId]);
 
   const handleUpdateSerie = () => {
     if (!serie) return;
     setIsLoading(true);
-    fetch(`/api/serie/${serieId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
+    updateSerieMutation.mutate(
+      { id: serieId, data: serie },
+      {
+        onSuccess: (updatedSerie) => {
+          setSerie(updatedSerie);
+          setIsLoading(false);
+          toast({
+            title: "Série mise à jour",
+            description: "La série a été mise à jour avec succès",
+          });
+        },
+        onError: (error) => {
+          toast({
+            title: "Erreur",
+            description: error.message,
+            variant: "destructive",
+          });
+          setIsLoading(false);
+        },
+      }
+    );
+  };
+
+  const handleAddSeason = () => {
+    setIsLoading(true);
+    addSeasonMutation.mutate(serieId, {
+      onSuccess: () => {
+        setIsLoading(false);
+        toast({
+          title: "Succès",
+          description: "Saison ajoutée avec succès",
+        });
       },
-      body: JSON.stringify(serie),
-    })
-      .then(async (res) => {
-        if (!res.ok) {
-          throw new Error(await res.text());
-        }
-        toast({
-          title: "Série mise à jour",
-          description: "La série a été mise à jour avec succès",
-        });
-        setIsLoading(false);
-        setSerie(await res.json());
-      })
-      .catch((error) => {
+      onError: (error) => {
         toast({
           title: "Erreur",
           description: error.message,
           variant: "destructive",
         });
         setIsLoading(false);
-      });
+      },
+    });
   };
-  const handleAddSeason = async () => {
-    if (!serie) return;
+
+  const handleRemoveSeason = (seasonId: number) => {
     setIsLoading(true);
-    fetch(`/api/serie/${serieId}/season`, {
-      method: "POST",
-    })
-      .then(async (res) => {
-        if (!res.ok) {
-          throw new Error(await res.text());
-        } else {
-          fetch(`/api/serie/${serieId}/season`)
-            .then((res) => res.json())
-            .then(setSeasons);
-        }
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        toast({
-          title: "Erreur",
-          description: error.message,
-          variant: "destructive",
-        });
-      });
-  };
-  const handleRemoveSeason = (seasonId: Number) => {
-    setIsLoading(true);
-    fetch(`/api/serie/${serieId}/season/${seasonId}`, {
-      method: "DELETE",
-    })
-      .then(async (res) => {
-        if (!res.ok) {
-          throw new Error(await res.text());
-        } else {
-          fetch(`/api/serie/${serieId}/season`)
-            .then((res) => res.json())
-            .then(setSeasons);
-        }
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        toast({
-          title: "Erreur",
-          description: error.message,
-          variant: "destructive",
-        });
-        setIsLoading(false);
-      });
+    removeSeasonMutation.mutate(
+      { serieId, seasonId },
+      {
+        onSuccess: () => {
+          setIsLoading(false);
+          toast({
+            title: "Succès",
+            description: "Saison supprimée avec succès",
+          });
+        },
+        onError: (error) => {
+          toast({
+            title: "Erreur",
+            description: error.message,
+            variant: "destructive",
+          });
+          setIsLoading(false);
+        },
+      }
+    );
   };
 
   const handleSaveThumbnail = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     setIsLoading(true);
-    fetch(`/api/serie/${serieId}/thumbnail`, {
-      method: "POST",
-      body: formData,
-    })
-      .then(async (res) => {
-        if (!res.ok) {
-          throw new Error(await res.text());
-        } else {
+    saveThumbnailMutation.mutate(
+      { id: serieId, formData },
+      {
+        onSuccess: () => {
           toast({
             title: "Miniature mise à jour",
             description: "La miniature a été mise à jour avec succès",
           });
           setThumbnailUrl(`/api/serie/${serieId}/thumbnail?${Date.now()}`);
-        }
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        toast({
-          title: "Erreur",
-          description: error.message,
-          variant: "destructive",
-        });
-        setIsLoading(false);
-      });
+          setIsLoading(false);
+        },
+        onError: (error) => {
+          toast({
+            title: "Erreur",
+            description: error.message,
+            variant: "destructive",
+          });
+          setIsLoading(false);
+        },
+      }
+    );
   };
 
   const handleAddvideo = (seasonNumber: number) => {
@@ -207,84 +213,63 @@ export default function Page() {
     }
   };
 
-  const handleSubmitEpisodes = async (e: React.FormEvent) => {
+  const handleSubmitEpisodes = (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentSeasonNumber || !episodeFiles) return;
-
     setIsLoading(true);
-    const videosOfSeason = videos.filter(
-      (v) => v.season.number === currentSeasonNumber
-    );
-
     const formData = new FormData();
     formData.append("episodeStart", episodeStart.toString());
     Array.from(episodeFiles).forEach((file, index) => {
       formData.append(`files[${index}]`, file);
     });
 
-    fetch(`/api/serie/${serieId}/season/${currentSeasonNumber}/video`, {
-      method: "POST",
-      body: formData,
-    })
-      .then(async (res) => {
-        if (!res.ok) {
-          throw new Error(await res.text());
-        }
-      })
-      .then(() => {
-        fetch(`/api/serie/${serieId}/video`)
-          .then((res) => res.json())
-          .then((res) => {
-            setVideos(res);
+    addVideoMutation.mutate(
+      { id: serieId, seasonNumber: currentSeasonNumber, formData },
+      {
+        onSuccess: () => {
+          setIsLoading(false);
+          setIsAddVideoDialogOpen(false);
+          toast({
+            title: "Succès",
+            description: `${
+              episodeEnd ? episodeEnd - episodeStart : 1
+            } episode(s) ajouté(s) à la saison ${currentSeasonNumber}`,
           });
-      })
-      .catch((error) => {
-        toast({
-          title: "Erreur",
-          description: error.message,
-          variant: "destructive",
-        });
-      });
-
-    setIsLoading(false);
-    setIsAddVideoDialogOpen(false);
-    toast({
-      title: "Succès",
-      description: `${
-        episodeEnd ? episodeEnd - episodeStart : 1
-      } episode(s) ajouté(s) à la saison ${currentSeasonNumber}`,
-    });
+        },
+        onError: (error) => {
+          toast({
+            title: "Erreur",
+            description: error.message,
+            variant: "destructive",
+          });
+          setIsLoading(false);
+        },
+      }
+    );
   };
 
-  const handleRemoveVideo = (seasonId: Number, videoId: Number) => {
+  const handleRemoveVideo = (seasonId: number, videoId: number) => {
     setIsLoading(true);
-    fetch(`/api/serie/${serieId}/season/${seasonId}/video/${videoId}`, {
-      method: "DELETE",
-    })
-      .then(async (res) => {
-        if (!res.ok) {
-          throw new Error(await res.text());
-        }
-      })
-      .then(() => {
-        fetch(`/api/serie/${serieId}/video`)
-          .then((res) => res.json())
-          .then((res) => {
-            setVideos(res);
+    removeVideoMutation.mutate(
+      { id: serieId, seasonId, videoId },
+      {
+        onSuccess: () => {
+          setIsLoading(false);
+          toast({
+            title: "Succès",
+            description: `Episode supprimé avec succès`,
           });
-      })
-      .catch((error) => {
-        toast({
-          title: "Erreur",
-          description: error.message,
-          variant: "destructive",
-        });
-      });
-    setIsLoading(false);
-    toast({
-      title: "Succès",
-      description: `Episode supprimé avec succès`,
-    });
+        },
+        onError: (error) => {
+          toast({
+            title: "Erreur",
+            description: error.message,
+            variant: "destructive",
+          });
+          setIsLoading(false);
+        },
+      }
+    );
   };
 
   const toggleSeasonExpand = (seasonNumber: number) => {
