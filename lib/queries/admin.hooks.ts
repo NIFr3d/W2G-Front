@@ -52,7 +52,7 @@ export const useDeleteSeries = () => {
 export const useSerie = (id: string) => {
   return useQuery({
     queryKey: ["serie", id],
-    queryFn: async () => {
+    queryFn: async (): Promise<Serie> => {
       const response = await fetch(`/api/serie/${id}`);
       if (!response.ok) throw new Error("Failed to fetch serie");
       return response.json();
@@ -96,6 +96,7 @@ export const useUpdateSerie = () => {
     },
     onSuccess: (_data, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["serie", id] });
+      queryClient.invalidateQueries({ queryKey: ["series"] });
     },
   });
 };
@@ -207,6 +208,30 @@ export const useRemoveVideo = () => {
     },
     onSuccess: (_data, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["videos", id] });
+    },
+  });
+};
+
+export const useEditSeasonNumber = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      serieId,
+      seasonId,
+      newNumber,
+    }: {
+      serieId: string;
+      seasonId: number;
+      newNumber: number;
+    }) => {
+      const response = await fetch(
+        `/api/serie/${serieId}/season/${seasonId}?number=${newNumber}`,
+        { method: "PUT" }
+      );
+      if (!response.ok) throw new Error(await response.text());
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["seasons"] });
     },
   });
 };

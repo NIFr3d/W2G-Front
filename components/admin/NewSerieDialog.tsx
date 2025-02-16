@@ -28,7 +28,9 @@ const serieSchema = z
       .nonempty("Ce champs ne doit pas être vide")
       .max(255, "Ce champs ne doit pas dépasser 255 caractères"),
     description: z.string().nonempty("Ce champs ne doit pas être vide"),
-    thumbnail: z.instanceof(FileList),
+    thumbnail: z.instanceof(FileList, {
+      message: "Le fichier doit être une image au format JPEG ou PNG",
+    }),
   })
   .refine(
     (data) => {
@@ -51,10 +53,10 @@ export default function NewSerieDialog() {
     defaultValues: {
       title: "",
       description: "",
-      thumbnail: [],
+      thumbnail: [] as FileList[],
     },
   });
-  const { register, handleSubmit, reset } = methods;
+  const { register, handleSubmit, reset, formState } = methods;
 
   const handleSaveNewSeries = useCallback(async (data: FieldValues) => {
     try {
@@ -94,8 +96,7 @@ export default function NewSerieDialog() {
               />
               {methods.formState.errors.title && (
                 <span className="text-red-500" role="alert">
-                  {typeof methods.formState.errors.title?.message ===
-                    "string" && methods.formState.errors.title.message}
+                  {formState.errors.title?.message}
                 </span>
               )}
               <br />
@@ -107,8 +108,7 @@ export default function NewSerieDialog() {
               />
               {methods.formState.errors.description && (
                 <span className="text-red-500" role="alert">
-                  {typeof methods.formState.errors.description?.message ===
-                    "string" && methods.formState.errors.description.message}
+                  {formState.errors.description?.message}
                 </span>
               )}
               <br />
@@ -122,8 +122,7 @@ export default function NewSerieDialog() {
               />
               {methods.formState.errors.thumbnail && (
                 <span className="text-red-500" role="alert">
-                  {typeof methods.formState.errors.thumbnail?.message ===
-                    "string" && methods.formState.errors.thumbnail.message}
+                  {formState.errors.thumbnail?.message}
                 </span>
               )}
             </DialogDescription>
@@ -131,7 +130,10 @@ export default function NewSerieDialog() {
           <DialogFooter>
             <DialogClose
               type="button"
-              onClick={() => setIsDialogOpen(false)}
+              onClick={() => {
+                reset();
+                setIsDialogOpen(false);
+              }}
               className="border rounded-lg mr-2 shadow-mg p-2 hover:bg-secondary/80"
             >
               Annuler
