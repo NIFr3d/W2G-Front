@@ -230,8 +230,9 @@ export const useEditSeasonNumber = () => {
       );
       if (!response.ok) throw new Error(await response.text());
     },
-    onSuccess: () => {
+    onSuccess: (_data, { serieId }) => {
       queryClient.invalidateQueries({ queryKey: ["seasons"] });
+      queryClient.invalidateQueries({ queryKey: ["videos", serieId] });
     },
   });
 };

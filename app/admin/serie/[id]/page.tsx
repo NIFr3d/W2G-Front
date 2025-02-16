@@ -12,7 +12,6 @@ import {
   useVideos,
   useAddSeason,
   useRemoveSeason,
-  useAddVideo,
   useRemoveVideo,
   useEditSeasonNumber,
 } from "@/lib/queries/admin.hooks";
