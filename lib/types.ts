@@ -22,3 +22,12 @@ export type WatchHistory = {
   video: Video;
   watchTime: number;
 };
+
+export type ConversionTask = {
+  taskId: string;
+  status: string;
+  episodeNumber: number;
+  season: number;
+  serie: string;
+  progress: number;
+};

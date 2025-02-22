@@ -1,5 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Season, Serie, Video } from "../types";
+import { ConversionTask, Season, Serie, Video } from "../types";
+
+export const useTasks = () => {
+  return useQuery({
+    queryKey: ["tasks"],
+    queryFn: async (): Promise<ConversionTask[]> => {
+      const response = await fetch("/api/tasks");
+      if (!response.ok) {
+        throw new Error("Failed to fetch tasks");
+      }
+      return response.json();
+    },
+  });
+};
 
 export const useSeries = () => {
   return useQuery({

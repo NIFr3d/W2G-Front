@@ -16,6 +16,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       href: "/admin/user",
       icon: User,
     },
+    {
+      title: "Conversions",
+      href: "/admin/conversion",
+      icon: Package2,
+    },
   ];
 
   return (

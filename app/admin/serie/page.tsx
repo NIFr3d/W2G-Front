@@ -10,18 +10,6 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  DialogClose,
-} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,14 +23,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/components/ui/use-toast";
 import Link from "next/link";
-import { FieldValues, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import {
-  useSeries,
-  useAddSeries,
-  useDeleteSeries,
-} from "@/lib/queries/admin.hooks";
+import { useSeries, useDeleteSeries } from "@/lib/queries/admin.hooks";
 import NewSerieDialog from "@/components/admin/NewSerieDialog";
 
 export default function Component() {
