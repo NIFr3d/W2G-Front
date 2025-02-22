@@ -28,9 +28,7 @@ const episodesSchema = z
     (data) => {
       if (data.episodeFiles.length === 0) return false;
       for (let i = 0; i < data.episodeFiles.length; i++) {
-        if (
-          !["video/mp4", "video/x-matroska"].includes(data.episodeFiles[i].type)
-        ) {
+        if (![".mp4", ".mkv"].includes(data.episodeFiles[i].name.slice(-4))) {
           return false;
         }
       }
