@@ -31,3 +31,10 @@ export type ConversionTask = {
   serie: string;
   progress: number;
 };
+
+export type User = {
+  id?: number;
+  username: string;
+  role: string;
+  password: string;
+};

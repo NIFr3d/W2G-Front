@@ -18,20 +18,26 @@ export default function CustomAlertDialog({
   title,
   description,
   disabled,
+  icon,
   onConfirm,
 }: {
   variant: "destructive";
   title: string;
   description: string;
+  icon?: React.ReactNode;
   disabled?: boolean;
   onConfirm: () => void;
 }) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant={variant}>
-          {variant === "destructive" ? "Supprimer" : "Confirmer"}
-        </Button>
+        {typeof icon === "undefined" ? (
+          <Button variant={variant}>
+            {variant === "destructive" ? "Supprimer" : "Confirmer"}
+          </Button>
+        ) : (
+          <button>{icon}</button>
+        )}
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
