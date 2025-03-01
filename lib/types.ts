@@ -39,3 +39,9 @@ export type User = {
   role: string;
   password: string;
 };
+
+export type Viewer = {
+  id: number;
+  username: string;
+  watchTime: string;
+};
