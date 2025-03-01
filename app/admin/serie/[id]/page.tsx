@@ -1,15 +1,12 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { Season, Serie, Video } from "@/lib/types";
+import { useState } from "react";
+import { useParams } from "next/navigation";
+import { Video } from "@/lib/types";
 import { useToast } from "@/components/ui/use-toast";
 import { ChevronUp, ChevronDown, Edit2, Save } from "lucide-react";
 import {
-  useSerie,
-  useSeasons,
-  useVideos,
   useAddSeason,
   useRemoveSeason,
   useRemoveVideo,
@@ -19,12 +16,12 @@ import SerieModificationForm from "@/components/admin/SerieModificationForm";
 import SerieThumbnailForm from "@/components/admin/SerieThumbnailForm";
 import AddVideoDialog from "@/components/admin/AddVideoDialog";
 import CustomAlertDialog from "@/components/general/customalertdialog";
+import { useSeasons, useSerie, useVideos } from "@/lib/queries/serie.hooks";
 
 export default function Page() {
   const { toast } = useToast();
   const params = useParams();
-  const router = useRouter();
-  const serieId = params.id as string;
+  const serieId = params?.id as string;
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -123,7 +120,7 @@ export default function Page() {
       // Save the edited season number
       if (editedSeasonNumber !== null) {
         editSeasonNumberMutation.mutate(
-          { serieId, seasonId, newNumber: editedSeasonNumber! },
+          { serieId, seasonId, newNumber: editedSeasonNumber },
           {
             onSuccess: () => {
               setEditingSeasonId(null);
@@ -164,7 +161,7 @@ export default function Page() {
             <h3 className="text-xl font-bold">Saisons</h3>
             <div className="grid gap-2">
               {seasons?.map((season) => (
-                <div>
+                <div key={season.id}>
                   <div
                     key={season.number}
                     className="bg-muted/40 rounded-lg p-4 flex items-center justify-between"

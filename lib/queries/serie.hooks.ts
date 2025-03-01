@@ -49,3 +49,27 @@ export const useVideos = (id: string) => {
     },
   });
 };
+
+export const useVideoBySeason = (serieId: string, seasonId: string) => {
+  return useQuery({
+    queryKey: ["video", serieId, seasonId],
+    queryFn: async (): Promise<Video[]> => {
+      const response = await fetch(
+        `/api/serie/${serieId}/season/${seasonId}/video`
+      );
+      if (!response.ok) throw new Error("Failed to fetch video");
+      return response.json();
+    },
+  });
+};
+
+export const useEpisode = (id: string) => {
+  return useQuery({
+    queryKey: ["episode", id],
+    queryFn: async (): Promise<Video> => {
+      const response = await fetch(`/api/episode/${id}`);
+      if (!response.ok) throw new Error("Failed to fetch episode");
+      return response.json();
+    },
+  });
+};

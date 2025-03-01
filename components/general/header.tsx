@@ -49,8 +49,10 @@ export default function Header() {
   const handleConfirmSearch = useCallback(() => {
     if (series?.length === 1) {
       router.push(`/serie/${series[0].id}`);
-    } else {
+    } else if ((series?.length ?? 0) > 1 && searchTerm.length > 0) {
       router.push(`/serie?search=${searchTerm}`);
+    } else {
+      return;
     }
     setDisplaySearchResults(false);
     setSearchTerm("");
