@@ -1,20 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import type { Serie } from "@/lib/types";
+import { useSeries } from "@/lib/queries/serie.hooks";
+import { useSearchParams } from "next/navigation";
 
 export default function Component() {
-  const [series, setSeries] = useState<Serie[]>([]);
-  useEffect(() => {
-    fetch("/api/serie")
-      .then((res) => res.json())
-      .then(setSeries);
-  }, []);
+  const searchParams = useSearchParams();
+  const searchTerm = searchParams?.get("search") || "";
+  const { data: series } = useSeries(searchTerm);
+
   return (
     <main className="flex-1 px-4 md:px-6 py-8">
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-        {series.map((serie) => (
+        {series?.map((serie) => (
           <div
             key={serie.id}
             className="flex flex-col items-center gap-2 group"

@@ -17,7 +17,7 @@ export default function Component() {
   }, [refetch]);
 
   return (
-    <div className="w-full min-h-screen bg-muted/40 py-8">
+    <div className="w-full bg-muted/40 py-8 h-full">
       <div className="max-w-6xl mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">Suivi des conversions</h1>
@@ -40,7 +40,9 @@ export default function Component() {
                   <p className="text-sm mr-2">{task.progress}%</p>
                 </div>
               </div>
-              {task.taskId !== tasks[tasks.length - 1].taskId && <Separator />}
+              {task.taskId !== tasks[tasks.length - 1].taskId && (
+                <Separator className="mb-4" />
+              )}
             </>
           ))}
         </div>

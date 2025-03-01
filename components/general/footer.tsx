@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="bg-muted p-6 md:py-12 w-full shrink-0">
+    <footer className="bg-muted p-6 md:py-12 w-full shrink-0 h-[100px]">
       <div className="container max-w-7xl text-sm">
         <p>&copy; 2024 Fred</p>
       </div>

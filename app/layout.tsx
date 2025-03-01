@@ -34,9 +34,8 @@ export default async function Layout({
           <Providers>
             <div className="flex flex-col min-h-dvh">
               <Header />
-              <div className="h-[calc(100dvh-3.5rem)] grow overflow-scroll">
+              <div className="h-[calc(100dvh-60px)] grow overflow-auto">
                 {children}
-                <Footer />
               </div>
             </div>
           </Providers>

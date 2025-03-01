@@ -24,8 +24,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   ];
 
   return (
-    <div className="grid min-h-screen w-full overflow-hidden">
-      <div className="hidden border-r bg-muted/40 lg:block fixed min-h-[calc(100vh-3.5rem)]">
+    <div className="grid w-full overflow-hidden">
+      <div className="hidden border-r bg-muted/40 lg:block fixed min-h-[calc(100vh-60px)]">
         <div className="mt-32 flex flex-col gap-2">
           <div className="flex h-[60px] items-center px-6">
             <Link

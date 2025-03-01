@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ConversionTask, Season, Serie, User, Video } from "@/lib/types";
+import { ConversionTask, User } from "@/lib/types";
 
 export const useUsers = () => {
   return useQuery({
@@ -86,19 +86,6 @@ export const useTasks = () => {
   });
 };
 
-export const useSeries = () => {
-  return useQuery({
-    queryKey: ["series"],
-    queryFn: async (): Promise<Serie[]> => {
-      const response = await fetch("/api/serie");
-      if (!response.ok) {
-        throw new Error("Failed to fetch series");
-      }
-      return response.json();
-    },
-  });
-};
-
 export const useAddSeries = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -130,39 +117,6 @@ export const useDeleteSeries = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["series"] });
-    },
-  });
-};
-
-export const useSerie = (id: string) => {
-  return useQuery({
-    queryKey: ["serie", id],
-    queryFn: async (): Promise<Serie> => {
-      const response = await fetch(`/api/serie/${id}`);
-      if (!response.ok) throw new Error("Failed to fetch serie");
-      return response.json();
-    },
-  });
-};
-
-export const useSeasons = (id: string) => {
-  return useQuery({
-    queryKey: ["seasons", id],
-    queryFn: async (): Promise<Season[]> => {
-      const response = await fetch(`/api/serie/${id}/season`);
-      if (!response.ok) throw new Error("Failed to fetch seasons");
-      return response.json();
-    },
-  });
-};
-
-export const useVideos = (id: string) => {
-  return useQuery({
-    queryKey: ["videos", id],
-    queryFn: async (): Promise<Video[]> => {
-      const response = await fetch(`/api/serie/${id}/video`);
-      if (!response.ok) throw new Error("Failed to fetch videos");
-      return response.json();
     },
   });
 };

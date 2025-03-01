@@ -1,17 +1,22 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
+import Image from "next/image";
 
-import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
-import { useEffect, useState } from 'react';
-import { WatchHistory } from '@/lib/types';
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import { useEffect, useState } from "react";
+import { WatchHistory } from "@/lib/types";
 
 export default function Home() {
   const [resumeWatchings, setResumeWatchings] = useState<WatchHistory[]>([]);
 
   useEffect(() => {
-    fetch('/api/history')
+    fetch("/api/history")
       .then((response) => response.json())
       .then((data) => setResumeWatchings(data));
   }, []);
@@ -29,7 +34,10 @@ export default function Home() {
           </div>
           <div className="mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {resumeWatchings.map((resumeWatching) => (
-              <Card key={resumeWatching.id} className="bg-muted rounded-lg overflow-hidden">
+              <Card
+                key={resumeWatching.id}
+                className="bg-muted rounded-lg overflow-hidden"
+              >
                 <CardHeader>
                   <Image
                     src={`/api/serie/${resumeWatching.video.season.serie.id}/thumbnail`}
@@ -37,14 +45,16 @@ export default function Home() {
                     width={300}
                     height={450}
                     className="object-cover"
-                    style={{ aspectRatio: '300/450', objectFit: 'cover' }}
+                    style={{ aspectRatio: "300/450", objectFit: "cover" }}
                   />
                 </CardHeader>
                 <CardContent className="p-4">
                   <div className="grid gap-2">
-                    <h3 className="text-lg font-bold">{resumeWatching.video.season.serie.title}</h3>
+                    <h3 className="text-lg font-bold">
+                      {resumeWatching.video.season.serie.title}
+                    </h3>
                     <p className="text-muted-foreground">
-                      Saison {resumeWatching.video.season.number}, Episode{' '}
+                      Saison {resumeWatching.video.season.number}, Episode{" "}
                       {resumeWatching.video.episode}
                     </p>
                   </div>
@@ -59,8 +69,8 @@ export default function Home() {
               <div className="col-span-full text-center">
                 <p className="text-lg text-muted-foreground">
                   Vous n'avez pas de série en cours de lecture. <br />
-                  Utilisez la fonction de recherche (en haut de l'écran) pour trouver une série à
-                  regarder.
+                  Utilisez la fonction de recherche (en haut de l'écran) pour
+                  trouver une série à regarder.
                 </p>
               </div>
             )}

@@ -37,7 +37,7 @@ export default function Page() {
   }, []);
 
   return (
-    <div className="w-full min-h-screen bg-muted/40 py-8">
+    <div className="w-full bg-muted/40 py-8">
       <div className="max-w-6xl mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">Gestion des utilisateurs</h1>

@@ -23,7 +23,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/components/ui/use-toast";
 import Link from "next/link";
-import { useSeries, useDeleteSeries } from "@/lib/queries/admin.hooks";
+import { useDeleteSeries } from "@/lib/queries/admin.hooks";
+import { useSeries } from "@/lib/queries/serie.hooks";
 import NewSerieDialog from "@/components/admin/NewSerieDialog";
 
 export default function Component() {
@@ -59,7 +60,7 @@ export default function Component() {
   }, [searchTerm, series]);
 
   return (
-    <div className="w-full min-h-screen bg-muted/40 py-8">
+    <div className="w-full bg-muted/40 py-8">
       <div className="max-w-6xl mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">Gestion des séries</h1>

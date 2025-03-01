@@ -7,22 +7,17 @@ import {
   SelectGroup,
   SelectItem,
 } from "@/components/ui/select";
-import { Serie } from "@/lib/types";
+import { useSerie } from "@/lib/queries/serie.hooks";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
 
 export default function Component() {
   const params = useParams();
-  const serieId = params.id;
-  const [serie, setSerie] = useState<Serie | null>(null);
-  useEffect(() => {
-    fetch(`/api/serie/${serieId}`)
-      .then((res) => res.json())
-      .then(setSerie);
-  }, [serieId]);
+  const serieId = params?.id as string | undefined;
+
+  const { data: serie } = useSerie(serieId ?? "");
 
   return (
-    <main className="w-full max-w-6xl mx-auto py-12 px-4 md:px-6">
+    <main className="max-w-6xl mx-auto py-12 px-4 md:px-6">
       <div className="grid md:grid-cols-2 gap-8 items-start">
         <div className="rounded-lg overflow-hidden">
           <img
