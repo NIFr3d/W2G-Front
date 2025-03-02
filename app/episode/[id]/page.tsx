@@ -1,5 +1,6 @@
 "use client";
 
+import EpisodePlayer from "@/components/episode/EpisodePlayer";
 import ViewersPanel from "@/components/episode/ViewersPanel";
 import { Button } from "@/components/ui/button";
 import { useEpisode } from "@/lib/queries/serie.hooks";
@@ -33,14 +34,7 @@ export default function Page() {
         <div className="grid lg:grid-cols-[1fr,300px] gap-6">
           <div className="space-y-6">
             {/* Video Player (simulated) */}
-            <div className="relative bg-black aspect-video w-full rounded-lg overflow-hidden">
-              <img
-                src="/placeholder.svg?height=720&width=1280"
-                alt="Video Player"
-                className="w-full h-full object-cover"
-              />
-            </div>
-
+            <EpisodePlayer videoURL={episodeId ?? ""} />
             {/* Episode Information */}
             <div className="space-y-4">
               <div className="space-y-2">
