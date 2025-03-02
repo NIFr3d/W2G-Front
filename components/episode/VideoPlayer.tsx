@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import videojs from "video.js";
 import "video.js/dist/video-js.css";
+import SubtitlesOctopus from "@/public/assets/js/subtitles-octopus.js";
 
 import Player from "video.js/dist/types/player";
 
@@ -30,6 +31,8 @@ export default function VideoPlayer({
     ],
   };
 
+  const [octopusInstance, setOctopusInstance] = useState<any>();
+
   const videoRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<Player | null>(null);
 
@@ -48,16 +51,13 @@ export default function VideoPlayer({
             if (onReady) {
               onReady(player);
             }
-            player.addRemoteTextTrack(
-              {
-                kind: "captions",
-                label: "Français",
-                src: `/api/subtitles/${videoURL}`,
-                srclang: "fr",
-                default: true,
-              },
-              true
-            );
+            // add subtitles
+            const octopusOptions = {
+              video: document.getElementsByTagName("video")[0],
+              subUrl: `/api/subtitles/${videoURL}`,
+              workerUrl: "/assets/js/subtitles-octopus-worker.js",
+            };
+            setOctopusInstance(new SubtitlesOctopus(octopusOptions));
           }
         ));
       }
@@ -75,13 +75,17 @@ export default function VideoPlayer({
       if (player && !player.isDisposed()) {
         player.dispose();
         playerRef.current = null;
+        octopusInstance?.dispose();
       }
     };
   }, []);
 
   return (
-    <div className="video-player" data-vjs-player>
-      <div ref={videoRef} />
-    </div>
+    <>
+      <script src="/assets/js/subtitles-octopus.js" />
+      <div className="video-player" data-vjs-player>
+        <div ref={videoRef} />
+      </div>
+    </>
   );
 }
