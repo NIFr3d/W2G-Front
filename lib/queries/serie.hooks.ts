@@ -12,7 +12,13 @@ export const useSerie = (id: string) => {
   });
 };
 
-export const useSeries = (search: string = "") => {
+export const useSeries = ({
+  search = "",
+  enabled = true,
+}: {
+  search?: string;
+  enabled?: boolean;
+}) => {
   return useQuery({
     queryKey: ["series", search], // Include search in the query key
     queryFn: async (): Promise<Serie[]> => {
@@ -24,7 +30,7 @@ export const useSeries = (search: string = "") => {
       }
       return response.json();
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    enabled,
   });
 };
 

@@ -46,7 +46,7 @@ export default function Page() {
       cookies.set("role", role, {
         expires: new Date(Date.now() + expiresIn),
       });
-      router.replace("/");
+      router.push("/");
     } else {
       setError("Nom d'utilisateur ou mot de passe incorrect");
     }
@@ -73,7 +73,7 @@ export default function Page() {
               <Input name="password" type="password" />
             </div>
           </CardContent>
-          <CardFooter>
+          <CardFooter className="flex flex-col space-y-2">
             <Button className="w-full" type="submit">
               Se connecter
             </Button>

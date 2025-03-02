@@ -34,7 +34,10 @@ export default function Header() {
   const [searchTerm, setSearchTerm] = useState("");
   const [displaySearchResults, setDisplaySearchResults] = useState(false);
 
-  const { data: series } = useSeries(searchTerm);
+  const { data: series } = useSeries({
+    search: searchTerm,
+    enabled: displaySearchResults,
+  });
 
   const handleFocus = useCallback(
     () => setDisplaySearchResults(searchTerm.length > 0),
@@ -101,7 +104,7 @@ export default function Header() {
                   {series?.map((serie) => (
                     <li key={serie.id} className="flex items-center">
                       <Link
-                        href="#"
+                        href={`/serie/${serie.id}`}
                         className="flex items-center rounded-lg overflow-hidden w-full"
                         prefetch={false}
                       >
@@ -118,11 +121,12 @@ export default function Header() {
                       </Link>
                     </li>
                   ))}
-                  {series?.length === 0 && (
-                    <li className="align-center text-center text-sm">
-                      Aucun résultat
-                    </li>
-                  )}
+                  {typeof series === "undefined" ||
+                    (series?.length === 0 && (
+                      <li className="align-center text-center text-sm">
+                        Aucun résultat
+                      </li>
+                    ))}
                 </ul>
               </div>
             )}

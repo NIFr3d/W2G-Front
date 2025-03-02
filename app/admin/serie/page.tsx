@@ -30,7 +30,7 @@ import NewSerieDialog from "@/components/admin/NewSerieDialog";
 export default function Component() {
   const { toast } = useToast();
 
-  const { data: series } = useSeries();
+  const { data: series } = useSeries({});
   const deleteSeriesMutation = useDeleteSeries();
 
   const [searchTerm, setSearchTerm] = useState("");

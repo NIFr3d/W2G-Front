@@ -7,7 +7,7 @@ import { useSearchParams } from "next/navigation";
 export default function Component() {
   const searchParams = useSearchParams();
   const searchTerm = searchParams?.get("search") || "";
-  const { data: series } = useSeries(searchTerm);
+  const { data: series } = useSeries({ search: searchTerm });
 
   return (
     <main className="flex-1 px-4 md:px-6 py-8">
